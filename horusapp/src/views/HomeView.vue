@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+  <Mapbox></Mapbox>
   </div>
 </template>
 
@@ -10,4 +11,7 @@ export default {
   components: {
   }
 }
+
+
+
 </script>
