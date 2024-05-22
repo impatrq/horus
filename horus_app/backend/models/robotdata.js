@@ -27,7 +27,7 @@ const dataSchema = new Schema({
     required: true,
   },
   time: {
-    type: Mixed,
+    type: String,
     required: true,
   },
   coordinates: {
