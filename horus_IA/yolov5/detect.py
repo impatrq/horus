@@ -1,38 +1,4 @@
-# YOLOv5 🚀 by Ultralytics, AGPL-3.0 license
-"""
-Run YOLOv5 detection inference on images, videos, directories, globs, YouTube, webcam, streams, etc.
-
-Usage - sources:
-    $ python detect.py --weights yolov5s.pt --source 0                               # webcam
-                                                     img.jpg                         # image
-                                                     vid.mp4                         # video
-                                                     screen                          # screenshot
-                                                     path/                           # directory
-                                                     list.txt                        # list of images
-                                                     list.streams                    # list of streams
-                                                     'path/*.jpg'                    # glob
-                                                     'https://youtu.be/LNwODJXcvt4'  # YouTube
-                                                     'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
-
-Usage - formats:
-    $ python detect.py --weights yolov5s.pt                 # PyTorch
-                                 yolov5s.torchscript        # TorchScript
-                                 yolov5s.onnx               # ONNX Runtime or OpenCV DNN with --dnn
-                                 yolov5s_openvino_model     # OpenVINO
-                                 yolov5s.engine             # TensorRT
-                                 yolov5s.mlmodel            # CoreML (macOS-only)
-                                 yolov5s_saved_model        # TensorFlow SavedModel
-                                 yolov5s.pb                 # TensorFlow GraphDef
-                                 yolov5s.tflite             # TensorFlow Lite
-                                 yolov5s_edgetpu.tflite     # TensorFlow Edge TPU
-                                 yolov5s_paddle_model       # PaddlePaddle
-"""
-
-import argparse
-import csv
-import os
-import platform
-import sys
+import argparse, csv, os, platform, numpy, cv2, time, json, sys
 from pathlib import Path
 import pathlib
 temp = pathlib.PosixPath
@@ -72,7 +38,7 @@ from utils.torch_utils import select_device, smart_inference_mode
 
 @smart_inference_mode()
 def run(
-    weights=ROOT / "yolov5s.pt",  # model path or triton URL
+    weights=ROOT / "orugasmodelo.pt",  # model path or triton URL
     source=ROOT / "data/images",  # file/dir/URL/glob/screen/0(webcam)
     data=ROOT / "data/coco128.yaml",  # dataset.yaml path
     imgsz=(640, 640),  # inference size (height, width)
@@ -202,6 +168,17 @@ def run(
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                    with open("Numerodefto.json", "r") as f:
+                        dataj = json.load(f)
+                    extr = (dataj["contador"])
+                    print (extr)
+                    nombre = "fotooruga" + str(extr) #toma el momento de la captura en tiempo
+                    cv2.imwrite(save_path + nombre +  ".jpg" , im0)
+                    extr = extr + 1
+                    time.sleep(0.5)
+                    dataj["contador"] = extr
+                    with open("Numerodefto.json", "w") as f: 
+                        json.dump(dataj,f)
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
@@ -237,12 +214,21 @@ def run(
                 cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections)
+            
             if save_img:
+                
+                #save_path = str(Path(save_path).with_suffix(".jpeg"))  # force *.mp4 suffix on results videos
+                #for i in range(5):
+                #    cv2.imwrite(save_path, im0)
+                #    time.sleep(0.5)
+                
+
                 if dataset.mode == "image":
                     cv2.imwrite(save_path, im0)
                 else:  # 'video' or 'stream'
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
+        
                         if isinstance(vid_writer[i], cv2.VideoWriter):
                             vid_writer[i].release()  # release previous video writer
                         if vid_cap:  # video
@@ -261,6 +247,7 @@ def run(
     # Print results
     t = tuple(x.t / seen * 1e3 for x in dt)  # speeds per image
     LOGGER.info(f"Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}" % t)
+
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ""
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
