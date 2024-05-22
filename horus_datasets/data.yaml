@@ -1,0 +1,15 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: 
+  0: "oruga"
+  1: "agujero"
+
+roboflow:
+  workspace: aki-2uhta
+  project: horus-rrwji
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/aki-2uhta/horus-rrwji/dataset/3
