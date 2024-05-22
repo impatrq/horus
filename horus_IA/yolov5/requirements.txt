@@ -1,6 +1,8 @@
 # YOLOv5 requirements
 # Usage: pip install -r requirements.txt
 
+#!python detect.py --weights yolov5s.pt --img 640 --conf 0.25 --source data/images
+
 # Base ------------------------------------------------------------------------
 gitpython>=3.1.30
 matplotlib>=3.3
