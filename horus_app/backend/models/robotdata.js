@@ -10,7 +10,7 @@ const dataSchema = new Schema({
     type: String,
     required: true,
   },
-  phermone_trap: {
+  pheromone_trap: {
     type: Boolean,
     required: true,
   },
@@ -23,7 +23,7 @@ const dataSchema = new Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   time: {
