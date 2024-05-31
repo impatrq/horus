@@ -10,7 +10,6 @@ const createMainWindow = () => {
     backgroundColor: "white",
     icon: path.join(__dirname, '../frontend/public/Ojo-de-Horus.ico'),
     frame: false,
-    win.removeMenu(),
     webPreferences: {
       nodeIntegration: false,
       devTools: isDev,
