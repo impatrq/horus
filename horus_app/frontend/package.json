@@ -2,18 +2,25 @@
   "name": "horusapp",
   "version": "0.1.0",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "electron:start": "concurrently \"npm run serve\" \"wait-on http://localhost:8080 && electron .\"",
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "electron-is": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "electron": "^20.2.0",
+    "electron-builder": "^23.3.3",
+    "wait-on": "^6.0.1"
   }
 }

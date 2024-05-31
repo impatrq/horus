@@ -4,6 +4,7 @@
 </template>
 
 <script>
+import axios from "axios"
 import Header from "./components/Header"
 import Settings from './components/Settings'
 
@@ -12,7 +13,7 @@ export default{
   components: {
     Header,
     Settings,
-  }
+  },
 }
 </script>
 
