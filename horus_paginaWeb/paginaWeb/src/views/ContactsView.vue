@@ -8,35 +8,41 @@
   </button>
   <!--[if mso]>Abajo de este comentario tenes que agregar html de Contactos<![endif]-->
   <h1>PONTE EN CONTACTO</h1>
-  <div class="adress">
-    <h2>Mailing Address</h2>
-    <p>123 Anywhere St., Any City State, Country 12345</p>
-  </div>
-  <div class="mail">
-    <h2>Email</h2>
-    <p>agroohoruss@gmail.com</p>
-  </div>
-  <div class="number">
-    <h2>Número Telefónico</h2>
-    <p>(+54 9) 11 6939 4245</p>
-  </div>
-  <div class="socials">
-    <h2>Socials</h2>
-    <div class="imagenes">
-      <div>
-        <a href="">
-        <img src="../../public/tiktok_logo.ico" alt="logo de TikTok">
-        </a> 
+  <div class="info">
+    <div class="reng1">
+      <div class="adress">
+        <h2>Mailing Address</h2>
+        <p>123 Anywhere St., Any City State, Country 12345</p>
       </div>
-      <div>
-        <a href="https://www.linkedin.com/company/agro-horus/about/">
-        <img src="../../public/linkedin_logo.ico" alt="logo de Linkedin"> 
-        </a>
+      <div class="mail">
+        <h2>Email</h2>
+        <p>agroohoruss@gmail.com</p>
       </div>
-      <div>
-        <a href="https://www.instagram.com/agro_horus/">
-        <img src="../../public/instagram_logo.ico" alt="logo de Instagram">
-        </a>
+    </div>
+    <div class="reng2">
+      <div class="number">
+        <h2>Número Telefónico</h2>
+        <p>(+54 9) 11 6939 4245</p>
+      </div>
+      <div class="socials">
+        <h2>Socials</h2>
+        <div class="imagenes">
+          <div class="socialimg">
+            <a href="">
+            <img src="../../public/tiktok_logo.ico" alt="logo de TikTok">
+            </a> 
+          </div>
+          <div class="socialimg">
+            <a href="https://www.linkedin.com/company/agro-horus/about/">
+            <img src="../../public/linkedin_logo.ico" alt="logo de Linkedin"> 
+            </a>
+          </div>
+          <div class="socialimg">
+            <a href="https://www.instagram.com/agro_horus/">
+            <img src="../../public/instagram_logo.ico" alt="logo de Instagram">
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -48,12 +54,12 @@ button {
   width:100%;
   max-width: 100px;
   font-size: 30px;
-  margin: 30px 40px;
+  margin: 1% 2.5%;
 }
 
 h1 {
   text-align: left;
-  margin: 0 0 0 105px;
+  margin: 0 0 0 8rem;
   font-size: 100px;
   font-family: Abril_Fatface;
   color: #1DCD8D;
@@ -69,49 +75,61 @@ p{
   color: #ffffff;
 }
 
+.info {
+  flex-wrap: wrap;
+  width: 70%;
+  margin: 2rem 0 0 10rem;
+}
+
+.reng1 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.reng2 {
+  display: flex;
+  justify-content: space-between;
+}
+
 .adress {
-  text-align: left;
-  margin-left: 100px;
+  align: left;
+  padding: 1%;
 }
 
 .mail {
-  text-align: left;
-  margin-left: 430px;
+  align: right;
+  padding: 1%;
 }
 
 .number {
-  text-align: left;
-  margin-left: 100px;
+  align: left;
+  padding: 1%;
 }
 
 .socials {
-  text-align: left;
-  margin-left: 588px;
-  max-width: 1000px;
+  align: right;
+  padding: 1%;
+  width: 15%;
+  margin-right: 6.6%;
+}
+
+.socialimg {
+  width: 3rem;
 }
 
 img {
   width: 100%;
-  border-radius: 10px;
-  max-width: 45px;
+  height: 100%;
+  border-radius: 10%;
+  max-width: 70%;
 }
 
 .imagenes {
-  justify-content: space-between;
   align-items: center;
   display: flex;
-  gap: 15px;
+  gap: 0rem;
 }
 
-.adress, .mail {
-  display: inline-block;
-  padding: 5px;
-
-}
-
-.number, .socials {
-  display: inline-block;
-  padding: 5px;
-}
 
 </style>
