@@ -24,18 +24,29 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Serial Communication - Port Creation
 
-const port = new SerialPort({
-  path: 'COM3',
-  baudRate: 115200,
+// const port = new SerialPort({
+//   path: 'COM3',
+//   baudRate: 115200,
+// })
+
+// const parser = new ReadlineParser();
+// port.pipe(parser);
+
+// parser.on('data', (data) => {
+//   try {
+//     let serial_data = JSON.parse(data);
+//     console.log('Data:', serial_data);
+//     robotdata.create(serial_data);
+//   } catch (error) {
+//     console.error("Error parsing JSON:", error);
+//   }
+// });
+
+// Routes
+app.get('/api/allLogs', async (req,res) => {
+  let allLogs = await robotdata.find()
+  res.json(allLogs)
 })
 
-port.on('readable', function () {
-  data = port.read();
-  let serial_data = JSON.parse(data);
-  console.log('Data:', serial_data);
-  robotdata.create(serial_data)
-})
-
-// Método de base de datos para el archivo json de conexión serie
-
+app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
