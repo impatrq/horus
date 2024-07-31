@@ -9,7 +9,6 @@ const createMainWindow = () => {
     show: true,
     backgroundColor: "white",
     icon: path.join(__dirname, '../frontend/public/Ojo-de-Horus.ico'),
-    frame: false,
     webPreferences: {
       nodeIntegration: false,
       devTools: isDev,
