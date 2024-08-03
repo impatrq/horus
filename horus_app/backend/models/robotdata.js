@@ -2,34 +2,37 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const dataSchema = new Schema({
-  robotId: {
-    type: Int16Array,
+  robot_id: {
+    type: Number,
     required: true,
-    //ej: robotID: 001 del primer robot
   },
-  plagueType: {
+  plague_type: {
     type: String,
     required: true,
-    //ej: orugas
   },
-  pheromoneTrap: {
+  pheromone_trap: {
     type: Boolean,
-    required: true
+    required: true,
   },
-  imageId: {
-    type: Int16Array,
-    required: true
-    // ej: 00001
+  image_id: {
+    type: Number,
+    required: true,
   },
   probability: {
-    type: Int16Array,
-    required: true
-    // ej: 76%
+    type: Number,
+    required: true,
   },
   date: {
-    type: Date,
-    required: true
-    // ej: 25/04/2024
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+  coordinates: {
+    type: Array,
+    required: true,
   }
 }, { timestamps: true });
 // la time stamp se incluirá con el resto de info en el log
