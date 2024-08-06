@@ -10,7 +10,7 @@ def blink(timer):
     led.toggle()
 
 timer.init(freq=2.5, mode=Timer.PERIODIC, callback=blink) 
-
+ 
 uart = machine.UART(0,baudrate=115200)
 uart.init(115200, bits=8, parity=None, stop=1, tx=Pin(0), rx=Pin(1))
 data = {

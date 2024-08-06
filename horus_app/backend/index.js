@@ -23,7 +23,6 @@ mongoose.connect(process.env.MONGO_URI)
 })
 
 // SERIAL COMMUNICATION
-
 // La conexión serial no funciona a menos que se encuentre conectada la raspberry
 const port = new SerialPort({
   path: 'COM3',
@@ -152,6 +151,7 @@ app.get('/api/coordinates/:coordinatesFilter', async (req,res) =>{
     res.json('Error en pedir ID filtrado por tipo de plaga')
   }
 })
+
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
