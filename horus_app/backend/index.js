@@ -6,9 +6,9 @@ const { ReadlineParser } = require ("@serialport/parser-readline");
 const mongoose = require('mongoose');
 require('dotenv').config()
 const app = express()
-const dataRoute = require ("./routes/robotdata");
 const robotdata = require('./models/robotdata');
 const bodyParser = require("body-parser")
+const cors = require('cors')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -24,10 +24,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 // SERIAL COMMUNICATION
 // La conexión serial no funciona a menos que se encuentre conectada la raspberry
-const port = new SerialPort({
-  path: 'COM3',
-  baudRate: 115200,
-})
+// const port = new SerialPort({
+//   path: 'COM3',
+//   baudRate: 115200,
+// })
 
 // const parser = new ReadlineParser();
 // port.pipe(parser);
@@ -44,6 +44,8 @@ const port = new SerialPort({
 
 
 // HTTP REQUEST ROUTES
+app.use(cors())
+
 app.get('/api/allLogs', async (req,res) => {
   let allLogs = await robotdata.find()
   res.json(allLogs)
@@ -152,6 +154,22 @@ app.get('/api/coordinates/:coordinatesFilter', async (req,res) =>{
   }
 })
 
+app.post('/api/filter', async (req,res) => {
+  search = req.body.search;
+  let find = await robotdata.find({name: {$regex: new RegExp('.*'+search+'.*','i')}}).exec();
+  console.log(find)
+  res.send(find)
+})
+
+app.get('/api/filter/:search', async (req,res) => {
+  const { search } = req.params;
+  try {
+    const result = await robotdata.find({name: {$regex: new RegExp('.*'+search+'.*')}}).exec();
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).send('Error fetching data');
+  }
+})
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
