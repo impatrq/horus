@@ -1,41 +1,40 @@
 <template>
     <div class="sorting-box">
-        <div class="filter">
-            <select v-model="filtertype" @change="$emit('filterChange')">
-                <option>Date</option>
-                <option>Time</option>
-                <option>Image ID</option>
-                <option>Robot ID</option>
-                <option>Plague Type</option>
-                <option>Pheromone Trap</option>
-                <option>Probability</option>
-                <option>Location</option>
-            </select>
-            <div class="datepicker-box" v-if="filtertype === 'Date'">
-                <Datepicker class="datepicker" v-model="picked" typeable></Datepicker>
-            </div>
-            <div class="timepicker-box" v-if="filtertype === 'Time'">
-                <input type="time"></input>
-            </div>
-            <div class="imageid-input" v-if="filtertype === 'Image ID'">
-                <input></input>
-            </div>
-            <div class="Robotid-input" v-if="filtertype === 'Robot ID'">
-                <input></input>
-            </div>
-            <div class="Plaguetype-input" v-if="filtertype === 'Plague Type'">
-                <input></input>
-            </div>
-            <div class="pheromonetrap-radio" v-if="filtertype === 'Pheromone Trap'">
-                <input type="radio" name="pheromone-trap">Yes</input>
-                <input type="radio" name="pheromone-trap">No</input>
-            </div>
-            <div class="Probability-input" v-if="filtertype === 'Probability'">
-                <input></input>
-            </div>
-            <div class="Location-input" v-if="filtertype === 'Location'">
-                <input></input>
-            </div>
+        <h3>Filter by</h3>
+        <select v-model="filtertype" @change="$emit('filterChange')">
+            <option>Date</option>
+            <option>Time</option>
+            <option>Image ID</option>
+            <option>Robot ID</option>
+            <option>Plague Type</option>
+            <option>Pheromone Trap</option>
+            <option>Probability</option>
+            <option>Location</option>
+        </select>
+        <div class="datepicker-box" v-if="filtertype === 'Date'">
+            <Datepicker class="datepicker" v-model="picked" typeable></Datepicker>
+        </div>
+        <div class="timepicker-box" v-if="filtertype === 'Time'">
+            <input type="time"></input>
+        </div>
+        <div class="imageid-input" v-if="filtertype === 'Image ID'">
+            <input></input>
+        </div>
+        <div class="Robotid-input" v-if="filtertype === 'Robot ID'">
+            <input></input>
+        </div>
+        <div class="Plaguetype-input" v-if="filtertype === 'Plague Type'">
+            <input></input>
+        </div>
+        <div class="pheromonetrap-radio" v-if="filtertype === 'Pheromone Trap'">
+            <input type="radio" name="pheromone-trap">Yes</input>
+            <input type="radio" name="pheromone-trap">No</input>
+        </div>
+        <div class="Probability-input" v-if="filtertype === 'Probability'">
+            <input></input>
+        </div>
+        <div class="Location-input" v-if="filtertype === 'Location'">
+            <input></input>
         </div>
     </div>
 </template>
