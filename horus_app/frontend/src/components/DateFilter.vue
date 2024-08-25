@@ -13,7 +13,7 @@
         </select>
         <div class="datepicker-box" v-if="showIfs.date">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('date')"></input>
-            <input type="date" v-model="dateInput"></input>
+            <input type="date" v-model="dateInput" @change="emit('sendFiltered', dateInput)"></input>
         </div>
         <div class="timepicker-box" v-if="showIfs.time">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('time')"></input>
@@ -56,15 +56,17 @@ const filterSelect = ref();
 
 const listLogs = ref([]);
 
+const emit = defineEmits(['sendFiltered'])
 
 const dateInput = ref();
-const timeInput = ref();
-const imageIdInput = ref();
-const robotIdInput = ref();
-const plagueTypeInput = ref();
-const pheromoneTrapInput = ref();
-const probabilityInput = ref();
-const locationInput = ref();
+// const timeInput = ref();
+// const imageIdInput = ref();
+// const robotIdInput = ref();
+// const plagueTypeInput = ref();
+// const pheromoneTrapInput = ref();
+// const probabilityInput = ref();
+// const locationInput = ref();
+const filterInputs = ref({})
 
 const showIfs = ref({
     date: false,

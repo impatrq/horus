@@ -1,6 +1,7 @@
 <template>
+    <!-- <h1>{{ filtered }}</h1> -->
     <div class="frame">
-        <div class="log"v-for="(log, index) in listLogs" :key="index">
+        <div class="log" v-for="(log, index) in listLogs" :key="index">
             <h5>Date: {{log.date}}</h5>
             <h5>Time: {{log.time}}</h5>
             <h5>Image ID: {{log.image_id}}</h5>
@@ -14,7 +15,14 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, watch } from 'vue'
+
+    const props = defineProps({
+        filtered: {
+            type: String,
+            default: ''
+        }
+    })
 
     const listLogs = ref([]);
 
@@ -22,10 +30,28 @@
         const res = await fetch("http://localhost:3000/api/allLogs");
         const finalRes = await res.json();
         listLogs.value = finalRes;
-        console.log(finalRes)
     }
-    getData()
+
+    async function searchData() {
+        console.log(props.filtered)
+        const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: props.filtered })
+        };
+        const response = await fetch("http://localhost:3000/api/filter", requestOptions);
+        const data = await response.json();
+        listLogs.value = data;
+        console.log(response)
+    }
+
+    watch(() => props.filtered, async (newValue, oldValue) => {
+        if (newValue !== oldValue) {
+            await searchData();
+        }
+    });
     
+    getData()
 </script>
 
 <style scoped>

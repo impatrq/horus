@@ -6,6 +6,7 @@ const { ReadlineParser } = require ("@serialport/parser-readline");
 const mongoose = require('mongoose');
 require('dotenv').config()
 const app = express()
+app.use(express.json())
 const robotdata = require('./models/robotdata');
 const bodyParser = require("body-parser")
 const cors = require('cors')
@@ -154,22 +155,26 @@ app.get('/api/coordinates/:coordinatesFilter', async (req,res) =>{
   }
 })
 
-app.post('/api/filter', async (req,res) => {
+app.post('/api/fi', async (req,res) => {
   search = req.body.search;
   let find = await robotdata.find({name: {$regex: new RegExp('.*'+search+'.*','i')}}).exec();
   console.log(find)
   res.send(find)
 })
 
-app.get('/api/filter/:search', async (req,res) => {
-  const { search } = req.params;
-  try {
-    const result = await robotdata.find({name: {$regex: new RegExp('.*'+search+'.*')}}).exec();
-    res.json(response.data);
-  } catch (error) {
-    res.status(500).send('Error fetching data');
-  }
+app.post('/api/filter', async (req,res) => {
+  const search = req.body.title;
+  const realFormat = date(search)
+  console.log(realFormat)
+  let find = await robotdata.find({date: {$regex: new RegExp('.*'+realFormat+'.*')}}).exec();
+  res.json(find)
+  console.log(find)
 })
+
+function dateFormat(date) {
+  const [year, month, day] = date.split('-');
+  return `${day}-${month}-${year}`;
+}
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
