@@ -1,0 +1,44 @@
+{
+    "name": "horus_app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "electron/main.js",
+    "scripts": {
+        "serve": "cd frontend && vue-cli-service serve",
+        "backend": "cd backend && npm run start:backend",
+        "electron:start": "concurrently \"npm run serve\" \"wait-on http://localhost:8080 && electron .\" \"npm run backend\" ",
+        "build": "vue-cli-service build frontend",
+        "start:backend": "nodemon backend/index.js --ignore '/frontend/'",
+        "start:frontend": "npm run serve --prefix '/frontend/'",
+        "dev": "concurrently \"npm run start:backend\" \"npm run electron:start\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@serialport/parser-readline": "^12.0.0",
+        "body-parser": "^1.20.2",
+        "core-js": "^3.8.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "electron-is": "^3.0.0",
+        "express": "^4.19.2",
+        "mongoose": "^8.4.0",
+        "morgan": "^1.10.0",
+        "path": "^0.12.7",
+        "serialport": "^12.0.0",
+        "vue": "^3.2.13",
+        "vue-router": "^4.0.3",
+        "vue3-datepicker": "^0.4.0"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "~5.0.0",
+        "@vue/cli-plugin-router": "~5.0.0",
+        "@vue/cli-service": "~5.0.0",
+        "concurrently": "^8.2.2",
+        "electron": "^20.2.0",
+        "electron-builder": "^23.3.3",
+        "nodemon": "^3.1.0",
+        "wait-on": "^6.0.1"
+    }
+}

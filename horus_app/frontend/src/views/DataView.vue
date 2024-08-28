@@ -1,10 +1,10 @@
 <template>
   <div class="view-background">
       <div class="box">
-        <DateFilter @sendFiltered="received"></DateFilter>
+        <DateFilter @sendDate="receivedDate" @sendTime="receivedTime" @resetFilter="resetFilter"></DateFilter>
         <OrderFilter></OrderFilter>
       </div>
-      <DataLog :filtered="filter"></DataLog>
+      <DataLog :filtered="filtered"></DataLog>
   </div>
 </template>
 
@@ -14,13 +14,32 @@
   import OrderFilter from '@/components/OrderFilter.vue'
   import { ref } from 'vue'
 
-  const filter = ref('')
+  const filtered = ref({
+    date: '',
+    time: ''
+  })
 
-  function received(message){
-    filter.value = message
-    console.log(filter.value)
+  function receivedDate(data){
+    filtered.value.date = dateFormat(data)
+    console.log(filtered.value)
+  }
+
+  function receivedTime(data){
+    filtered.value.time = data
+    console.log(filtered.value)
+  }
+
+  function resetFilter(key) {
+    filtered.value[key] = '';
+  }
+
+  function dateFormat(date) {
+  const [year, month, day] = date.split('-');
+  return `${day}-${month}-${year}`;
   }
 </script> 
+
+
 
 <style scoped>
   .view-background{

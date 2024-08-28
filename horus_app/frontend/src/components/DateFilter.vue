@@ -11,13 +11,14 @@
             <option value="probability">Probability</option>
             <option value="location">Location</option>
         </select>
+        <!-- <FilterInput :inputType="date" :showIf="false" /> -->
         <div class="datepicker-box" v-if="showIfs.date">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('date')"></input>
-            <input type="date" v-model="dateInput" @change="emit('sendFiltered', dateInput)"></input>
+            <input type="date" v-model="dateInput" @change="$emit('sendDate', dateInput)"></input>
         </div>
         <div class="timepicker-box" v-if="showIfs.time">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('time')"></input>
-            <input type="time" v-model="timeInput"></input>
+            <input type="time" v-model="timeInput" @change="$emit('sendTime', timeInput)"></input>
         </div>
         <div class="imageid-input" v-if="showIfs.imageId">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('imageId')"></input>
@@ -48,6 +49,7 @@
 </template>
 
 <script setup>
+import FilterInput from './FilterInputs/FilterInput.vue'
 import { ref } from 'vue'
 const picked = ref(new Date())
 
@@ -56,10 +58,10 @@ const filterSelect = ref();
 
 const listLogs = ref([]);
 
-const emit = defineEmits(['sendFiltered'])
+const emit = defineEmits(['sendFiltered', 'resetFilter'])
 
 const dateInput = ref();
-// const timeInput = ref();
+const timeInput = ref();
 // const imageIdInput = ref();
 // const robotIdInput = ref();
 // const plagueTypeInput = ref();
@@ -79,16 +81,17 @@ const showIfs = ref({
     location: false
 });
 
-
 function showCateg(){
     filtertype.value = filterSelect.value
     showIfs.value[filterSelect.value] = true;
 }
 
 function hideCateg(categ){
-    console.log(categ)
     showIfs.value[categ] = false;
+    const resetFilter = emit('resetFilter', categ)
 }
+
+
 </script>
 
 <style scoped>

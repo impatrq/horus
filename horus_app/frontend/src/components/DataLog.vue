@@ -1,5 +1,4 @@
 <template>
-    <!-- <h1>{{ filtered }}</h1> -->
     <div class="frame">
         <div class="log" v-for="(log, index) in listLogs" :key="index">
             <h5>Date: {{log.date}}</h5>
@@ -19,8 +18,8 @@
 
     const props = defineProps({
         filtered: {
-            type: String,
-            default: ''
+            type: Object,
+            required: true
         }
     })
 
@@ -33,25 +32,43 @@
     }
 
     async function searchData() {
-        console.log(props.filtered)
         const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: props.filtered })
+        body: JSON.stringify({ ...(props.filtered.date ? { date: props.filtered.date } : {}), ...(props.filtered.time ? { time: props.filtered.time } : {}) })
         };
         const response = await fetch("http://localhost:3000/api/filter", requestOptions);
         const data = await response.json();
         listLogs.value = data;
-        console.log(response)
+    }
+
+    function resetCheck(){
+        console.log('reset function')
+        for (const key in props.filtered) {
+            console.log(key)
+            if (props.filtered[key] !== '') {
+            return false
+            }
+        }
+        return true
     }
 
     watch(() => props.filtered, async (newValue, oldValue) => {
-        if (newValue !== oldValue) {
+        let emptyFilter = resetCheck()
+        console.log('watch props',props.filtered)
+        if (emptyFilter === true) {
+            console.log('empty')
+            getData();
+        } 
+        else {
+            console.log('notempty')
             await searchData();
         }
-    });
+    }, { deep: true });
     
-    getData()
+    onMounted(() => {
+        getData();
+    });
 </script>
 
 <style scoped>

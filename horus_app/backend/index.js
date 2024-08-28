@@ -163,18 +163,14 @@ app.post('/api/fi', async (req,res) => {
 })
 
 app.post('/api/filter', async (req,res) => {
-  const search = req.body.title;
-  const realFormat = date(search)
-  console.log(realFormat)
-  let find = await robotdata.find({date: {$regex: new RegExp('.*'+realFormat+'.*')}}).exec();
+  const date = req.body.date
+  const time = req.body.time || ''
+  let find = await robotdata.find({
+    date: { $regex: new RegExp('.*' + date + '.*') },
+    time: { $regex: new RegExp('.*' + time + '.*') }
+  }).exec();
   res.json(find)
-  console.log(find)
 })
-
-function dateFormat(date) {
-  const [year, month, day] = date.split('-');
-  return `${day}-${month}-${year}`;
-}
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
