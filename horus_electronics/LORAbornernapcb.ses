@@ -1,0 +1,216 @@
+(session LORAbornernapcb.ses
+  (base_design LORAbornernapcb.dsn)
+  (placement
+    (resolution um 10)
+    (component Connector_PinHeader_1.27mm:PinHeader_1x12_P1.27mm_Vertical
+      (place J2 1447800 -876300 front 0)
+    )
+    (component Connector_PinHeader_2.54mm:PinHeader_1x12_P2.54mm_Vertical
+      (place J1 1549400 -800100 front 0)
+    )
+  )
+  (was_is
+  )
+  (routes 
+    (resolution um 10)
+    (parser
+      (host_cad "KiCad's Pcbnew")
+      (host_version 7.0.8)
+    )
+    (library_out 
+      (padstack "Via[0-1]_800:400_um"
+        (shape
+          (circle F.Cu 8000 0 0)
+        )
+        (shape
+          (circle B.Cu 8000 0 0)
+        )
+        (attach off)
+      )
+      (padstack "Via[0-1]_800:400_um"
+        (shape
+          (circle F.Cu 8000 0 0)
+        )
+        (shape
+          (circle B.Cu 8000 0 0)
+        )
+        (attach off)
+      )
+    )
+    (network_out 
+      (net "Net-(J1-Pin_1)"
+        (wire
+          (path B.Cu 5000
+            1447800 -876300
+            1457319 -876300
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1549400 -800100
+            1533519 -800100
+            1457319 -876300
+          )
+        )
+      )
+      (net "Net-(J1-Pin_2)"
+        (wire
+          (path B.Cu 5000
+            1549400 -825500
+            1536381 -825500
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -825500
+            1472881 -889000
+            1447800 -889000
+          )
+        )
+      )
+      (net "Net-(J1-Pin_3)"
+        (wire
+          (path B.Cu 5000
+            1549400 -850900
+            1536381 -850900
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -850900
+            1485581 -901700
+            1447800 -901700
+          )
+        )
+      )
+      (net "Net-(J1-Pin_4)"
+        (wire
+          (path B.Cu 5000
+            1549400 -876300
+            1536381 -876300
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -876300
+            1498281 -914400
+            1447800 -914400
+          )
+        )
+      )
+      (net "Net-(J1-Pin_5)"
+        (wire
+          (path B.Cu 5000
+            1549400 -901700
+            1536381 -901700
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -901700
+            1510981 -927100
+            1447800 -927100
+          )
+        )
+      )
+      (net "Net-(J1-Pin_6)"
+        (wire
+          (path B.Cu 5000
+            1549400 -927100
+            1536381 -927100
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -927100
+            1523681 -939800
+            1447800 -939800
+          )
+        )
+      )
+      (net "Net-(J1-Pin_7)"
+        (wire
+          (path B.Cu 5000
+            1549400 -952500
+            1447800 -952500
+          )
+        )
+      )
+      (net "Net-(J1-Pin_8)"
+        (wire
+          (path B.Cu 5000
+            1549400 -977900
+            1536381 -977900
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -977900
+            1523681 -965200
+            1447800 -965200
+          )
+        )
+      )
+      (net "Net-(J1-Pin_9)"
+        (wire
+          (path B.Cu 5000
+            1549400 -1003300
+            1536381 -1003300
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -1003300
+            1510981 -977900
+            1447800 -977900
+          )
+        )
+      )
+      (net "Net-(J1-Pin_10)"
+        (wire
+          (path B.Cu 5000
+            1447800 -990600
+            1498281 -990600
+            1536381 -1028700
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1549400 -1028700
+            1536381 -1028700
+          )
+        )
+      )
+      (net "Net-(J1-Pin_11)"
+        (wire
+          (path B.Cu 5000
+            1549400 -1054100
+            1536381 -1054100
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1536381 -1054100
+            1485581 -1003300
+            1447800 -1003300
+          )
+        )
+      )
+      (net "Net-(J1-Pin_12)"
+        (wire
+          (path B.Cu 5000
+            1447800 -1016000
+            1457319 -1016000
+          )
+        )
+        (wire
+          (path B.Cu 5000
+            1549400 -1079500
+            1520819 -1079500
+            1457319 -1016000
+          )
+        )
+      )
+    )
+  )
+)
