@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "author": "Mateo Kearney",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

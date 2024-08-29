@@ -36,7 +36,7 @@
   <section class="features-section">
     <div class="feature">
       <div class="illustration">
-        <img src="../../public/images.jpg" alt="syngenta logo">
+        <img src="../../public/images.jpg" alt="Impa logo">
       </div>
       <div class="text-info">
         <p>"Agradecidos con todos aquellos que nos brindaron su apoyo"</p>
