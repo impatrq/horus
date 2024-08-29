@@ -1,0 +1,82 @@
+
+(rules PCB HorusEjemplo
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias off)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 920)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.5)
+    )
+    (layer_rule B.Cu
+      (active off)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.7)
+    )
+  )
+  (rule
+    (width 1700.0)
+    (clearance 200.2)
+    (clearance 125.0 (type smd_to_turn_gap))
+    (clearance 50.0 (type smd))
+    (clearance 200.2 (type "kicad_default"))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 1700.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    "Net-(1AS3-Pin_1)" "Net-(2BS3-Pin_1)" "unconnected-(A2-DIR-Pad16)" VMOTORESin "unconnected-(A1-~{ENABLE}-Pad9)" "unconnected-(A1-MS1-Pad10)" "unconnected-(A1-MS2-Pad11)" "unconnected-(A1-MS3-Pad12)"
+    "Net-(A1-~{RESET})" "Net-(A1-STEP)" "Net-(A1-DIR)" "unconnected-(A2-~{ENABLE}-Pad9)" "unconnected-(A2-MS1-Pad10)" "unconnected-(A2-MS2-Pad11)" "unconnected-(A2-MS3-Pad12)" "Net-(A2-~{RESET})"
+    "unconnected-(A3-~{ENABLE}-Pad9)" "unconnected-(A3-MS1-Pad10)" "unconnected-(A3-MS2-Pad11)" "unconnected-(A3-MS3-Pad12)" "Net-(A3-~{RESET})" "Net-(A3-STEP)" "Net-(A3-DIR)" "unconnected-(A4-~{ENABLE}-Pad9)"
+    "unconnected-(A4-MS1-Pad10)" "unconnected-(A4-MS2-Pad11)" "unconnected-(A4-MS3-Pad12)" "Net-(A4-~{RESET})" "GND_Lógico" "unconnected-(A4-STEP-Pad15)" VddDRIVERSa4988 "GND_Motor"
+    "unconnected-(A2-STEP-Pad15)" "unconnected-(A4-DIR-Pad16)" "Net-(1AS1-Pin_1)" "Net-(1AS2-Pin_1)" "Net-(1AS4-Pin_1)" "Net-(1BS1-Pin_1)" "Net-(1BS2-Pin_1)" "Net-(1BS3-Pin_1)"
+    "Net-(1BS4-Pin_1)" "Net-(2AS1-Pin_1)" "Net-(2AS2-Pin_1)" "Net-(2AS3-Pin_1)" "Net-(2AS4-Pin_1)" "Net-(2BS1-Pin_1)" "Net-(2BS2-Pin_1)" "Net-(2BS4-Pin_1)"
+    (clearance_class "kicad_default")
+    (via_rule "kicad_default")
+    (rule
+      (width 1700.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)
