@@ -1,10 +1,11 @@
 <template>
   <div class="view-background">
       <div class="box">
-        <DateFilter @sendDate="receivedDate" @sendTime="receivedTime" @resetFilter="resetFilter"></DateFilter>
-        <OrderFilter></OrderFilter>
+        {{ordered.value}}
+        <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter"></DateFilter>
+        <OrderFilter @sendOrder="updateOrder" @sendDirection="updateDirection"></OrderFilter>
       </div>
-      <DataLog :filtered="filtered"></DataLog>
+      <DataLog :filtered="filtered" :ordered="ordered"></DataLog>
   </div>
 </template>
 
@@ -16,19 +17,30 @@
 
   const filtered = ref({
     date: '',
-    time: ''
+    time: '',
+    robot_id: '',
+    plague_type: '',
+    pheromone_trap: '',
+    image_id: '',
+    probability: '',
+    coordinates: ''
   })
 
-  function receivedDate(data){
-    filtered.value.date = dateFormat(data)
-    console.log(filtered.value)
-  }
+  const ordered = ref({
+    orderType: {
+      date: -1,
+      time: -1
+    }
+  })
 
-  function receivedTime(data){
-    filtered.value.time = data
-    console.log(filtered.value)
+  function updateFilter({ key, value }) {
+    if (key === 'date') {
+      filtered.value[key] = dateFormat(value);
+    } else {
+      filtered.value[key] = value;
+    }
+    console.log(filtered.value);
   }
-
   function resetFilter(key) {
     filtered.value[key] = '';
   }
@@ -36,6 +48,14 @@
   function dateFormat(date) {
   const [year, month, day] = date.split('-');
   return `${day}-${month}-${year}`;
+  }
+
+  function updateOrder(order){
+    ordered.value.orderType = order
+  }
+
+  function updateDirection(direction){
+    ordered.value.direction = direction
   }
 </script> 
 

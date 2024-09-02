@@ -1,5 +1,6 @@
 <template>
     <div class="frame">
+    <!-- {{props.ordered}} -->
         <div class="log" v-for="(log, index) in listLogs" :key="index">
             <h5>Date: {{log.date}}</h5>
             <h5>Time: {{log.time}}</h5>
@@ -20,6 +21,10 @@
         filtered: {
             type: Object,
             required: true
+        },
+        ordered: {
+            type: Object,
+            required: true
         }
     })
 
@@ -35,8 +40,17 @@
         const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...(props.filtered.date ? { date: props.filtered.date } : {}), ...(props.filtered.time ? { time: props.filtered.time } : {}) })
-        };
+        body: JSON.stringify({ 
+            ...(props.filtered.date ? { date: props.filtered.date } : {}), 
+            ...(props.filtered.time ? { time: props.filtered.time } : {}),
+            ...(props.filtered.robot_id ? { time: props.filtered.robot_id } : {}),
+            ...(props.filtered.plague_type ? { time: props.filtered.plague_type } : {}),
+            ...(props.filtered.pheromone_trap ? { time: props.filtered.pheromone_trap } : {}),
+            ...(props.filtered.image_id ? { time: props.filtered.image_id } : {}),
+            ...(props.filtered.probability ? { time: props.filtered.probability } : {}),
+            ...(props.filtered.coordinates ? { time: props.filtered.coordinates } : {}),
+            ...(props.ordered.orderType ? { order: props.ordered.orderType } : {}),
+        })};
         const response = await fetch("http://localhost:3000/api/filter", requestOptions);
         const data = await response.json();
         listLogs.value = data;
@@ -66,6 +80,10 @@
         }
     }, { deep: true });
     
+    watch(() => props.ordered, async (newValue, oldValue) => {
+        await searchData();
+    }, { deep: true });
+
     onMounted(() => {
         getData();
     });
