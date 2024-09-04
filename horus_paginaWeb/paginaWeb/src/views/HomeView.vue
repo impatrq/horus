@@ -74,7 +74,7 @@
           <img src="../../public/nacho.jpg" alt="Juan Ignacio Torres">
         </div>
         <div class="team-detail">
-          <p>Sin comentarios. Déjame en paz!</p>
+          <p>Sin comentarios.</p>
           <h3> Torres, Juan Ignacio</h3>
         </div>
       </div>
