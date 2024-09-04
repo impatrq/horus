@@ -381,6 +381,21 @@
 
 }
 
+@media only screen and (max-width: 700px) {
+
+.objective-section .text h2 { font-size: 2rem; }
+
+.objective-section .text p { font-size: 73,2%; }
+
+.objective-section .cell img { width: 11.2rem; }
+
+.objective-section .text { text-align: center; margin-bottom: 0; }
+
+.objective-section { flex-direction: column; gap: 10px; }
+
+}
+
+
 @media only screen and (max-width: 500px) {
 
 .objective-section .text h2 { font-size: 2rem; }
