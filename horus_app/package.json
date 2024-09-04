@@ -6,7 +6,7 @@
     "scripts": {
         "serve": "cd frontend && vue-cli-service serve",
         "backend": "cd backend && npm run start:backend",
-        "electron:start": "concurrently \"npm run serve\" \"wait-on http://localhost:8080 && electron .\" \"npm run backend\" ",
+        "electron:start": "concurrently \"npm run backend\" \"npm run serve\" \"wait-on http://localhost:8080 && electron .\" ",
         "build": "vue-cli-service build frontend",
         "start:backend": "nodemon backend/index.js --ignore '/frontend/'",
         "start:frontend": "npm run serve --prefix '/frontend/'",
