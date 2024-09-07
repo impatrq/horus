@@ -8,7 +8,7 @@
 
 | Página web | Email | Instagram |
 |------------|-------|-----------|
-|[agro_horus.vercel.app](https://agro_horus.vercel.app/)|agroohoruss@gmail.com|[@agro_horus](https://www.instagram.com/agro_horus/)|
+|[agro_horus.app](horus-pagina-web.vercel.app)|agroohoruss@gmail.com|[@agro_horus](https://www.instagram.com/agro_horus/)|
 
 &nbsp;
 
