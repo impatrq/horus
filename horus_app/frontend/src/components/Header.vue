@@ -38,7 +38,7 @@ span{
 
 header{
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 50px;
   background-color: white;
   color: #2c3e50;

@@ -1,7 +1,6 @@
 <template>
   <div class="view-background">
       <div class="box">
-        {{ordered.value}}
         <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter"></DateFilter>
         <OrderFilter @sendOrder="updateOrder" @sendDirection="updateDirection"></OrderFilter>
       </div>
@@ -41,6 +40,7 @@
     }
     console.log(filtered.value);
   }
+  
   function resetFilter(key) {
     filtered.value[key] = '';
   }
