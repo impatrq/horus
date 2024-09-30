@@ -70,13 +70,6 @@ const filterInput = ref({
     coordinates: ''
 });
 
-// const timeInput = ref();
-// const imageIdInput = ref();
-// const robotIdInput = ref();
-// const plagueTypeInput = ref();
-// const pheromoneTrapInput = ref();
-// const probabilityInput = ref();
-// const locationInput = ref();
 
 const showIfs = ref({
     date: false,
