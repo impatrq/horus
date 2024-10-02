@@ -1,8 +1,20 @@
 <template>
-  <button @click="getLocation()">Get Location</button>
-  {{ lat }} , {{ lng }}
-
   <div ref="mapContainer" style="width: 90vw; height: 400px"></div>
+
+  <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter'></input>
+
+  <input type='file' id='offline-map'></input>
+
+  <input id='pheromone-trap'></input>
+  
+  <input id='starting-point'></input>
+
+  <section id='area'>
+    <input id='polygono1'></input>
+    <input id='polygono2'></input>
+    <input id='polygono3'></input>
+    <input id='polygono4'></input>
+  </section>
 </template>
 
 <script setup>
@@ -14,12 +26,22 @@ const lng = ref(0);
 const map = ref();
 const mapContainer = ref();
 const popup = L.popup();
+const centerCoordinates = ref()
 
 function onMapClick(e) {
   popup
     .setLatLng(e.latlng)
     .setContent("You clicked the map at " + e.latlng.toString())
     .openOn(map.value);
+}
+
+function updateCenter() {
+  console.log(centerCoordinates.value)
+  const [latitude, longitude] = centerCoordinates.value.split(",").map(Number);
+  lat.value = latitude
+  lng.value = longitude
+  map.value.setView([lat.value, lng.value], 13);
+  console.log(typeof lat.value, typeof lng.value)
 }
 
 onMounted(() => {
