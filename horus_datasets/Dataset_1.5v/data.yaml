@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['0', '1']
+
+roboflow:
+  workspace: aki-2uhta
+  project: modelo-1.5v
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/aki-2uhta/modelo-1.5v/dataset/1
