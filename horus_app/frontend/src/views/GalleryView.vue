@@ -10,7 +10,7 @@
       <button @click="exportImages">Export All Images</button>
     </div>
     <div class="images-section">
-      <h3 v-show='noImages' class="noImages">No images uploaded yet</h3>
+      <h3 v-if='noImages' class="noImages">No images uploaded yet</h3>
       <div v-for="(image, index) in images" :key="index" class="image-container">
         <ImagesDisplay :source="image" @zoom-in="zoom"/>
       </div>
@@ -57,18 +57,20 @@ const storeImage = async (file) => {
 };
 
 const loadImagesFromDB = async () => {
-  if (images.value === null){
+  noImages.value = false
+  const tx = db.transaction('images', 'readonly');
+  const store = tx.objectStore('images');
+  const allImages = await store.getAll();
+
+  for (const imageRecord of allImages) {
+    const base64String = await convertToBase64(imageRecord.file);
+    images.value.push(base64String);
+  }
+  
+  if (!images.value || images.value.length === 0){
     noImages.value = true
   } else {
     noImages.value = false
-    const tx = db.transaction('images', 'readonly');
-    const store = tx.objectStore('images');
-    const allImages = await store.getAll();
-
-    for (const imageRecord of allImages) {
-      const base64String = await convertToBase64(imageRecord.file);
-      images.value.push(base64String);
-    }
   }
 };
 
@@ -149,7 +151,7 @@ img {
   height: 100%;
 }
 .big-image-container {
-  height: 100vh;
+  width: 75%;
   opacity: 1;
   align-items: center;
   justify-content: center;
