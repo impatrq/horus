@@ -1,27 +1,35 @@
 <template>
     <div>
-        <h3>Ajustes</h3>
-        <h4>Exportar</h4>
-        <h5><a download="SD Card.txt" href="./assets/Ayuda/SD Card.txt">SD Card</a></h5>
-        <h5><a download="Detection Logs.txt" href="./assets/Ayuda/Detection-Logs.txt">Detection Logs</a></h5>
-        <h4>Ayuda</h4>
-        <h5><a download="Manual de Usuario.txt" href="./assets/Ayuda/Manual-de-Usuario-Prop.txt">Manual de Usuario</a></h5>
-        <h5><a download="Contacto.txt" href="./assets/Ayuda/ContactoProp.txt">Contacto</a></h5>
+        <h4><a download="Manual de Usuario.txt" href="./assets/Ayuda/Manual-de-Usuario-Prop.txt">Ayuda</a></h4>
+        <h4><a download="Detection Logs.txt" href="./assets/Ayuda/Detection-Logs.txt">Exportar Logs</a></h4>
+        <h4><a download="Contacto.txt" href="./assets/Ayuda/ContactoProp.txt">Contactos</a></h4>
     </div>
 </template>
 
 <style scoped>
-    h3,h4,h5{
+    h3{
         text-align: center;
+    }
+    
+    a{
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    a:hover {
+        color: #42b983;
+        text-decoration: underline;
     }
 
     div{
-        width: 25%;
+        width: 15%;
         height: auto;
-        background-color: #ffffff;
-        opacity: 95%;
+        background-image: linear-gradient(to bottom, #ffffff,#f0f0f0);
+        opacity: 100%;
         padding: 1rem;
         float: right;
         position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>

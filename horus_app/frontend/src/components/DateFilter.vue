@@ -1,16 +1,16 @@
 <template>
     <div class="sorting-box">
-        <h3>Filter by</h3>
+        <h3>Filtrar por:</h3>
         {{filterInput.value}}
         <select v-model="filterSelect" @change="showCateg">
-            <option value="date">Date</option>
-            <option value="time">Time</option>
-            <option value="imageId">Image ID</option>
-            <option value="robotId">Robot ID</option>
-            <option value="plagueType">Plague Type</option>
-            <option value="pheromoneTrap">Pheromone Trap</option>
-            <option value="probability">Probability</option>
-            <option value="location">Location</option>
+            <option value="date">Día</option>
+            <option value="time">Hora</option>
+            <option value="imageId">ID Imagen</option>
+            <option value="robotId">ID Robot</option>
+            <option value="plagueType">Tipo de Plaga:</option>
+            <option value="pheromoneTrap">Trampa de feromona:</option>
+            <option value="probability">Probabilidad:</option>
+            <option value="location">Coordenadas:</option>
         </select>
         <!-- <FilterInput :inputType="date" :showIf="false" /> -->
         <div class="datepicker-box" v-if="showIfs.date">
@@ -116,6 +116,7 @@ function updateFilter(key, value) {
 
     .deleteCateg{
         height: 1.5rem;
-        margin-right: 1rem
+        margin-right: 1rem;
+        flex-wrap: wrap
     }
 </style>

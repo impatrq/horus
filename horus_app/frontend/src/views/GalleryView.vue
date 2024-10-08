@@ -6,11 +6,11 @@
     </div>
     <div class="input-section">
       <input type="file" accept="jpg" @change="onFileInput" multiple class='hidden' id='file_input' />
-      <label for='file_input' class='button'>Upload Images</label>
-      <button @click="exportImages">Export All Images</button>
+      <label for='file_input' class='button'>Cargar Imágenes</label>
+      <button @click="exportImages">Exportar Imágenes</button>
     </div>
     <div class="images-section">
-      <h3 v-if='noImages' class="noImages">No images uploaded yet</h3>
+      <h3 v-if='noImages' class="noImages">No hay imágenes cargadas</h3>
       <div v-for="(image, index) in images" :key="index" class="image-container">
         <ImagesDisplay :source="image" @zoom-in="zoom"/>
       </div>

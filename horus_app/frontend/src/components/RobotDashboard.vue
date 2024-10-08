@@ -3,20 +3,24 @@
         <div class="superior">
             <div class="center-circle">
                 <div class="circle">
-                    <h4>R1</h4>
+                    {{robot}}
                 </div>
             </div>
-            <button><img src="../assets/boton-menos.png"></img></button>
+            <button @click="$emit('deleteRobot', id+1), console.log(robot, id)"><img src="../assets/boton-menos.png"></img></button>
         </div>
-        <h4>Battery left:</h4><p></p>
-        <h4>Time remaining:</h4><p></p>
-        <h4>Last log:</h4><p></p>
-        <h4>Coordinates:</h4><p></p>
+        <h4>ID: {{id+1}}</h4>
+        <h4>Batería Restante:</h4>
+        <h4>Tiempo Restante:</h4><p></p>
+        <h4>Último Log:</h4><p></p>
+        <h4>Coordenadas:</h4><p></p>
     </div>
 </template>
 
 <script setup>
-
+defineProps({
+    robot: String,
+    id: Number
+})
 </script>
 
 <style scoped>

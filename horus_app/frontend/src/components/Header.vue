@@ -2,10 +2,10 @@
   <header>
     <div class="image"><img :src="require('../assets/Ojo de Horus.png')" /></div>
     <nav>
-      <RouterLink to="/">Home</RouterLink> |
+      <RouterLink to="/">inicio</RouterLink> |
       <RouterLink to="/robots">Robots</RouterLink> |
       <RouterLink to="/data">Data</RouterLink> |
-      <RouterLink to="/gallery">Gallery</RouterLink>
+      <RouterLink to="/gallery">Galería</RouterLink>
     </nav>
     <span></span>
     <SettingsIcon @OnClick="showSettings= !showSettings"/>
@@ -25,11 +25,12 @@
 
 <style scoped>
 nav {
+  display: flex;
   width: 50%;
   height: 50px;
   text-align: left;
-  padding-top: 1em;
-  justify-content: space-evenly;
+  justify-content: space-around;
+  align-items: center
 }
 
 span{
@@ -39,9 +40,10 @@ span{
 header{
   display: flex;
   width: 100vw;
-  height: 50px;
+  height: 7vh;
   background-color: white;
   color: #2c3e50;
+  align-items: center
 }
 
 .space {
@@ -69,12 +71,12 @@ nav a.router-link-exact-active {
 
 .image {
   width: 4rem;
-  padding-left: 0.4rem;
+  padding-left: 0.8rem;
   padding-right: 0.4rem;
 }
 
 .z-01 {
-  z-index: 2;
+  z-index: 801;
   position: fixed;
   right: 1vh;
 }
