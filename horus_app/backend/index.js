@@ -8,6 +8,7 @@ require('dotenv').config()
 const app = express()
 app.use(express.json())
 const robotdata = require('./models/robotdata');
+const mapdata = require('./models/mapdata')
 const bodyParser = require("body-parser")
 const cors = require('cors')
 
@@ -43,6 +44,24 @@ mongoose.connect(process.env.MONGO_URI)
 //   }
 // });
 
+// const json = {
+//   robot_id: 1,
+//   plague_type: 'oruga',
+//   pheromone_trap: true,
+//   image_id: 123,
+//   probability: 89,
+//   date: '2024-10-02',
+//   time: '12:00',
+//   coordinates: [51.512986, -0.091357] // Includes a negative coordinate
+// };
+// robotdata.create(json)
+//   .then(result => {
+//     console.log('Document created successfully:', result);
+//   })
+//   .catch(err => {
+//     console.error('Error creating document:', err);
+//   });
+
 
 // HTTP REQUEST ROUTES
 app.use(cors())
@@ -76,6 +95,17 @@ app.post('/api/filter', async (req,res) => {
     ...(coordinates !== undefined && { coordinates: { $regex: new RegExp('.*' + coordinates + '.*') } })
   }).sort( order ).exec();
   res.json(find)
+})
+
+app.get('/api/map', async (req,res) => {
+  let find = await robotdata.find({}, { coordinates: 1, _id: 0})
+  console.log(find)
+  res.json(find)
+})
+
+app.post('/api/store', async (req,res) => {
+  console.log(req.body)
+  mapdata.create(req.body)
 })
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
