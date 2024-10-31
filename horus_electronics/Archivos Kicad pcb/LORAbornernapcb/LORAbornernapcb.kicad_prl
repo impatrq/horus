@@ -90,7 +90,7 @@
         "open": false,
         "window": {
           "display": 0,
-          "maximized": false,
+          "maximized": true,
           "pos_x": -6,
           "pos_y": 1,
           "size_x": 1382,
