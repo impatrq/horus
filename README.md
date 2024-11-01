@@ -67,3 +67,5 @@ Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
 ## Reconocimientos
 
 * Medalla de Oro en PROTOTIPOS - EJE LIBRE de las ONIET 2024
+
+* Medalla de Oro en FEED DE INSTAGRAM de las ONIET 2024
