@@ -63,3 +63,7 @@ Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
 * 📧 juanignaciotorr@gmail.com
 
 * LinkedIn: https://www.linkedin.com/in/juan-ignacio-torres-34a232303/
+
+## Reconocimientos
+
+* Medalla de Oro en PROTOTIPOS - EJE LIBRE de las ONIET 2024
