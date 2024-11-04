@@ -34,9 +34,13 @@ Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
 
 * LinkedIn: https://www.linkedin.com/in/mart%C3%ADn-alejandro-cabrera-6014b727b/
 
-### Kearney, Mateo
+### Contreras, Abril Victoria
 
-* LinkedIn: https://www.linkedin.com/in/mateo-kearney-996637303/
+* 📷 Instagram: @_ _viicontreras__
+
+* 📧 abrilchiscontreras@gmail.com
+
+* LinkedIn: https://www.linkedin.com/in/abril-contreras-039998303/
 
 ### Díaz Steinbrecher, Lara
 
@@ -50,16 +54,18 @@ Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
   
 * LinkedIn: https://www.linkedin.com/in/santino-marco-ferrante-a57bb5180/
 
-### Contreras, Abril Victoria
+### Kearney, Mateo
 
-* 📷 Instagram: @_viicontreras_
-
-* 📧 abrilchiscontreras@gmail.com
-
-* LinkedIn: https://www.linkedin.com/in/abril-contreras-039998303/
+* LinkedIn: https://www.linkedin.com/in/mateo-kearney-996637303/
 
 ### Torres, Juan Ignacio
 
 * 📧 juanignaciotorr@gmail.com
 
 * LinkedIn: https://www.linkedin.com/in/juan-ignacio-torres-34a232303/
+
+## Reconocimientos
+
+* Medalla de Oro en PROTOTIPOS - EJE LIBRE de las ONIET 2024
+
+* Medalla de Oro en FEED DE INSTAGRAM de las ONIET 2024
