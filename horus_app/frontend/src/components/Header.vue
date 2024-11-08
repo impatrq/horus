@@ -2,10 +2,10 @@
   <header>
     <div class="image"><img :src="require('../assets/Ojo de Horus.png')" /></div>
     <nav>
-      <RouterLink to="/">inicio</RouterLink> |
+      <RouterLink to="/">Home</RouterLink> |
       <RouterLink to="/robots">Robots</RouterLink> |
       <RouterLink to="/data">Data</RouterLink> |
-      <RouterLink to="/gallery">Galería</RouterLink>
+      <RouterLink to="/gallery">Gallery</RouterLink>
     </nav>
     <span></span>
     <SettingsIcon @OnClick="showSettings= !showSettings"/>

@@ -4,36 +4,38 @@
     <div style="display:flex; flex-direction: column; background-color: #E5E5E5; padding: 2rem">
       <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter" />
       
-      <h3>Configuración de Mapa:  </h3>
+      <h3>Map Settings:  </h3>
       <section style="display:flex; align-items: center">
-        <h5>Centrar mapa:</h5>
-        <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter'></input>
+        <h5>Center Map:</h5>
+        <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter' placeholder="Coordinates"></input>
       </section>
 
       <section style="display:flex; align-items: center">
         <h5>Subir mapa offline: </h5>
-        <input type='file' id='offline-map' @change='storeMap' class='hidden'></input>
-        <label for='offline-map' class='button'>Mapa Offline</label>
+        <button @click="downloadTiles">Descargar</button>
+        <!-- <input type='file' id='offline-map' @change='storeMap' class='hidden'></input> -->
+        <!-- <label for='offline-map' class='button'>Mapa Offline</label> -->
       </section>
 
       <section style="display:flex; align-items: center">
-        <h5>Agregar trampa de feromona: </h5>
-        <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap'></input>
+        <h5>Add Pheromone Trap: </h5>
+        <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap' placeholder="Coordinates"></input>
       </section>
 
       <section style="display:flex; align-items: center">
-        <h5>Agregar punto de inicio de ruta de robot: </h5>
-        <input id='starting-point'></input>
-        <input id='robot-id'</input>
+        <h5>Add Route Starting Point: </h5>
+        <input id='starting-point' v-model='startCoordinates' @change='addStart(1)' placeholder='Coordinates'></input>
+        <input id='robot-id' v-model='startId' @change='addStart(0)' placeholder='Robot ID'></input>
       </section>
 
       <section id='area' style="display:flex; align-items: center">
-        <h5>Agregar área de reconocimiento: </h5>
+        <h5>Add Survey Area: </h5>
         <div style="flex-direction: column">
-          <input id='polygon1'></input>
-          <input id='polygon2'></input>
-          <input id='polygon3'></input>
-          <input id='polygon4'></input>
+          <input id='polygon1' v-model='polygonCoordinates1' @change='addPolygon(0)' placeholder='Top Left Point'></input>
+          <input id='polygon2' v-model='polygonCoordinates2' @change='addPolygon(1)' placeholder='Top Right Point'></input>
+          <input id='polygon3' v-model='polygonRobot_ID' @change='addPolygon(4)' placeholder='Robot ID'></input>
+          <input id='polygon4' v-model='polygonCoordinates4' @change='addPolygon(3)' placeholder='Bottom Right Point'></input>
+          <input v-model='polygonCoordinates3' @change='addPolygon(2)' placeholder='Bottom Left Point'></input>
         </div>
       </section>
     </div>
@@ -43,11 +45,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import L from "leaflet";
+import 'leaflet.offline'
 import { openDB } from 'idb'
 import DateFilter from '@/components/DateFilter.vue';
 
-const lat = ref(0);
-const lng = ref(0);
 const map = ref();
 const mapContainer = ref();
 const popup = L.popup();
@@ -57,6 +58,37 @@ const offlineMap = ref()
 let detectionsLayer = ref()
 let trapLayer = ref()
 const trapCoordinates = ref()
+let startLayer = ref()
+const startCoordinates = ref()
+const startId = ref()
+const startFlag = ref({
+  coordinates: false,
+  id: false,
+})
+let polygonLayer = ref()
+const polygonCoordinates1 = ref()
+const polygonCoordinates2 = ref()
+const polygonCoordinates3 = ref()
+const polygonCoordinates4 = ref()
+const polygonRobot_ID = ref()
+const polygonFlag = ref({
+  coordinates1: false,
+  coordinates2: false,
+  coordinates3: false,
+  coordinates4: false,
+  robot_id: false
+})
+const filter = ref({
+  date: '',
+  time: '',
+  robot_id: '',
+  plague_type: '',
+  pheromone_trap: '',
+  image_id:'',
+  probability:'',
+  coordinates:''
+})
+const zoom = ref([51.505, -0.09])
 
 function onMapClick(e) {
   popup
@@ -67,11 +99,9 @@ function onMapClick(e) {
 
 function updateCenter() {
   console.log(centerCoordinates.value)
-  const [latitude, longitude] = centerCoordinates.value.split(",").map(Number);
-  lat.value = latitude
-  lng.value = longitude
-  map.value.setView([lat.value, lng.value], 13);
-  console.log(typeof lat.value, typeof lng.value)
+  const coordinates = centerCoordinates.value.split(",").map(Number);
+  map.value.setView(coordinates, 13);
+  postToDB('zoom_coordinates', coordinates)
 }
 
 const storeMap = async (event) => {
@@ -109,83 +139,331 @@ const loadImagesFromDB = async () => {
 };
 
 async function loadLogs() {
-  const data = await fetch('http://localhost:3000/api/map')
-  console.log('data', data)
-  const logs = await data.json();
-  console.log('logs', logs)
+  try {
+    const data = await fetch('http://localhost:3000/api/map/logs')
+    console.log('data', data)
+    const logs = await data.json();
+    console.log('logs', logs)
 
-  if (!detectionsLayer.value) {
-    detectionsLayer = L.layerGroup().addTo(map.value)
-    console.log('layer created')
+    for (const log of logs) {
+      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      console.log('marker written')
+      marker.bindPopup(`Trap at: ${log.coordinates[0]}, ${log.coordinates[1]}`);
+      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+    }    
+  } catch (err) {
+    alert('Server Connection Error')
+  }
+}
+
+async function loadMapData() {
+  try {
+    let data = await fetch('http://localhost:3000/api/map/pheromone_traps')
+    let elements = await data.json()
+    
+    for (const element of elements) {
+      console.log('element', element.trap_coordinates)
+      let marker = L.marker(element.trap_coordinates).addTo(trapLayer)
+      marker.bindPopup(`Trap at: ${element.trap_coordinates[0]}, ${element.trap_coordinates[1]}`);
+
+      marker.on('dblclick', async function() {
+        trapLayer.removeLayer(marker);
+        console.log(element._id)
+        const api = await fetch(`http://localhost:3000/api/delete/trap_coordinates/${element._id}`, { method: 'DELETE' })
+      });
+    }
+    console.log('hello from loadMapData')
+  } catch(err) {
+    alert('Server Connection Error')
+    console.log('Problem loading pheromone traps')
   }
 
-  if (!trapLayer.value) {
-  trapLayer = L.layerGroup().addTo(map.value)
-  console.log('layer created')
+  try {
+    let data = await fetch('http://localhost:3000/api/map/start_points')
+    let elements = await data.json()
+
+    for (const element of elements) {
+      console.log('start', element)
+      const marker = L.marker(element.starting_point).addTo(startLayer)
+      marker.bindPopup(`Trap at: ${element.starting_point[0]}, ${element.starting_point[1]}`);
+
+      marker.on('dblclick', async function() {
+        startLayer.removeLayer(marker);
+        const api = await fetch(`http://localhost:3000/api/delete/starting_point/${element._id}`, { method: 'DELETE' })
+      });
+    }
+  } catch(err) {
+    alert('Server Connection Error')
+    console.log('Problem loading start points')
   }
 
-  for (const log of logs) {
-    const marker = L.marker(log.coordinates).addTo(detectionsLayer)
-    console.log('marker written')
-    marker.bindPopup(`Trap at: 1, 2`);
-    // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+  try {
+    let data = await fetch('http://localhost:3000/api/map/polygons')
+    let elements = await data.json()
+    
+    for (const element of elements) {
+      console.log('polygon',element)
+      const polygon = L.polygon([
+        element.polygon_coordinates[0],
+        element.polygon_coordinates[1],
+        element.polygon_coordinates[2],
+        element.polygon_coordinates[3]
+      ]).addTo(polygonLayer);
+      polygon.bindPopup(`Area de rastreo de robot $(element.id)`);
+
+      polygon.on('dblclick', async function() {
+        polygonLayer.removeLayer(polygon);
+        console.log('deleting polygon')
+        const api = await fetch(`http://localhost:3000/api/delete/polygon_coordinates/${element._id}`, { method: 'DELETE' })
+      });
+    }
+  } catch(err) {
+    alert('Server Connection Error')
+    console.log('Problem loading polygons', err)
   }
 }
 
 const addTrap = () => {
-  const coordinates = trapCoordinates.value.split(',').map(Number);
-  console.log(coordinates)
-  const marker = L.marker(coordinates).addTo(trapLayer)
-  postToDB('trap_coordinates', 'polygon_coordinates', 'starting_point', coordinates[0], coordinates[1])
+  console.log(trapCoordinates.value)
+  if (trapCoordinates.value && trapCoordinates.value !== '0' && trapCoordinates.value !== '[0]') {
+    try {
+      const coordinates = trapCoordinates.value.split(',').map(Number);
+
+      if (coordinates.length !== 2 || coordinates.some(isNaN)) {
+        throw new Error('Coordenadas tienen que tener formato "x,y"');
+      }
+
+      console.log(coordinates);
+      const marker = L.marker(coordinates).addTo(trapLayer);
+      postToDB('trap_coordinates', coordinates);
+      trapCoordinates.value = ''
+    } catch (error) {
+      console.error('Error creating marker:', error.message);
+      alert('Failed to create marker. Please provide valid coordinates.');
+    }
+  }
 }
 
-async function postToDB(type, noTypeOne, noTypeTwo, coordinates_x, coordinates_y) {
-  const coordinates = [coordinates_x, coordinates_y]
+const addStart = (field) => {
+  if (field === 1) {
+    startFlag.coordinates = true
+  } else {
+    startFlag.id = true
+  }
+
+  console.log(startFlag.coordinates)
+  if (startFlag.coordinates === true && startFlag.id === true) {
+    console.log('hi')
+    try {
+      const coordinates = startCoordinates.value.split(',').map(Number);
+
+      if (coordinates.length !== 2 || coordinates.some(isNaN)) {
+        throw new Error('Coordenadas tienen que tener formato "x,y"');
+      }
+
+      const marker = L.marker(coordinates).addTo(startLayer)
+      postToDB('trap_coordinates', coordinates, startId.value)
+      startFlag.coordinates = false
+      startFlag.coordinates = false
+
+      startCoordinates.value = ''
+      startId.value = ''
+    } catch (error) {
+      console.error('Error creating marker:', error.message);
+      alert('Failed to create marker. Please provide valid coordinates.');
+    }
+  }
+}
+
+const addPolygon = (field) => {
+  console.log(polygonFlag)
+  if (field === 0) {
+    polygonFlag.coordinates1 = true
+  } else if (field === 1) {
+    polygonFlag.coordinates2 = true
+  } else if (field === 2) {
+    polygonFlag.coordinates3 = true
+  } else if (field === 3){
+    polygonFlag.coordinates4 = true
+  } else {
+    polygonFlag.robot_id = true
+  }
+
+  if (polygonFlag.coordinates1 === true && polygonFlag.coordinates2 === true && polygonFlag.coordinates3 === true && polygonFlag.coordinates4 === true && polygonFlag.robot_id === true ) {
+    console.log('hi')
+    try {
+      const coordinates = [
+        polygonCoordinates1.value.split(',').map(Number),
+        polygonCoordinates2.value.split(',').map(Number),
+        polygonCoordinates3.value.split(',').map(Number),
+        polygonCoordinates4.value.split(',').map(Number)
+      ];
+
+      console.log(coordinates)
+      const polygon = L.polygon([
+        coordinates[0],
+        coordinates[1],
+        coordinates[2],
+        coordinates[3]
+      ]).addTo(polygonLayer);
+
+      postToDB('polygon_coordinates', coordinates, polygonRobot_ID.value)
+      polygonFlag.coordinates1 = false
+      polygonFlag.coordinates2 = false
+      polygonFlag.coordinates3 = false
+      polygonFlag.coordinates4 = false
+      polygonFlag.robot_id = false
+
+      polygonCoordinates1.value = ''
+      polygonCoordinates2.value = ''
+      polygonCoordinates3.value = ''
+      polygonCoordinates4.value = ''
+      polygonRobot_ID.value = ''
+    } catch (error) {
+      console.error('Error creating polygon:', error.message);
+      alert('Failed to create marker. Please provide valid coordinates.');
+    }
+  }
+}
+
+async function postToDB(type, coordinates, id) {
+  console.log('echo in postToDB')
   const requestOptions = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     [type]: coordinates,
-    [noTypeOne]: null,
-    [noTypeTwo]: null
+    ...(id !== null && { id })
   })};
-  const response = await fetch("http://localhost:3000/api/store", requestOptions);
+  const response = await fetch(`http://localhost:3000/api/store/${type}`, requestOptions);
 }
 
-const filter = () => {
+const updateFilter = async ({ key, value }) => {
+  filter.value[key] = value
+  console.log(filter.value.date)
+  try{
+    const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      ...(filter.value.date ? { date: filter.value.date } : {}), 
+      ...(filter.value.time ? { time: filter.value.time } : {}),
+      ...(filter.value.robot_id ? { robot_id: filter.value.robot_id } : {}),
+      ...(filter.value.plague_type ? { plague_type: filter.value.plague_type } : {}),
+      ...(filter.value.pheromone_trap ? { pheromone_trap: filter.value.pheromone_trap } : {}),
+      ...(filter.value.image_id ? { image_id: filter.value.image_id } : {}),
+      ...(filter.value.probability ? { probability: filter.value.probability } : {}),
+      ...(filter.value.coordinates ? { coordinates: filter.value.coordinates } : {}),
+  })};
+  const response = await fetch("http://localhost:3000/api/map/filter", requestOptions);
+  const data = await response.json()
 
+  detectionsLayer.clearLayers();
+  for (const log of data) {
+    const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+    console.log('marker written')
+    // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+  }
+  } catch (err) {
+    console.log("Error al fetchear luego de actualizar filtro")
+  }
+}
+
+const resetFilter = async (key) => {
+  filter.value[key] = ''
+  try{
+    const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      ...(filter.value.date ? { date: filter.value.date } : {}), 
+      ...(filter.value.time ? { time: filter.value.time } : {}),
+      ...(filter.value.robot_id ? { robot_id: filter.value.robot_id } : {}),
+      ...(filter.value.plague_type ? { plague_type: filter.value.plague_type } : {}),
+      ...(filter.value.pheromone_trap ? { pheromone_trap: filter.value.pheromone_trap } : {}),
+      ...(filter.value.image_id ? { image_id: filter.value.image_id } : {}),
+      ...(filter.value.probability ? { probability: filter.value.probability } : {}),
+      ...(filter.value.coordinates ? { coordinates: filter.value.coordinates } : {}),
+    })};
+    const response = await fetch("http://localhost:3000/api/map/filter", requestOptions);
+    const data = await response.json()
+
+    detectionsLayer.clearLayers();
+    for (const log of data) {
+      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      console.log('marker written')
+      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+    }
+  } catch (err) {
+    console.log("Error al fetchear luego de actualizar filtro")
+  }
+}
+
+const storeZoom = async () => {
+  postToDB()
+}
+
+const getZoom = async () => {
+  try {
+    const data = await fetch("http://localhost:3000/api/map/zoom")
+    const res = await data.json()
+    if (res.lenght != 0) {
+      zoom.value = res.zoom_coordinates
+    }
+  } catch (err) {
+    alert('Server Connection Error')
+  }
+}
+
+function downloadTiles() {
+  baseLayer.getStorage().startDownload([13,14,15]);
 }
 
 onMounted(async () => {
+  console.log(zoom.value)
   await initDB();
-  map.value = L.map(mapContainer.value).setView([51.505, -0.09], 13);
-  const baseLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  await getZoom();
+  console.log(zoom.value)
+  map.value = L.map(mapContainer.value).setView(zoom.value, 13);
+  const baseLayer = L.tileLayer.offline("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    doubleClickZoom: false,
+    zoomAnimation: false,
   }).addTo(map.value);
 
-  const circle = L.circle([51.508, -0.11], {
-  color: 'red',
-  fillColor: '#f03',
-  fillOpacity: 0.5,
-  radius: 500
-  }).addTo(map.value);
+  const controlSaveTiles = L.control.savetiles(
+    baseLayer, 
+    {
+      zoomlevels: [13, 14, 15, 16],
+      saveText: '💾',
+      rmText: '🗑️',
+      saveWhatYouSee: true
+    }
+  ).addTo(map.value);
 
-  const polygon = L.polygon([
-    [51.509, -0.08],
-    [51.503, -0.06],
-    [51.51, -0.047]
-  ]).addTo(map.value);
+  detectionsLayer = L.layerGroup().addTo(map.value) 
+  trapLayer = L.layerGroup().addTo(map.value)
+  startLayer = L.layerGroup().addTo(map.value)
+  polygonLayer = L.layerGroup().addTo(map.value)
 
-  const marker = L.marker([51.5, -0.09]).addTo(map.value);
+  // const circle = L.circle([51.508, -0.11], {
+  // color: 'red',
+  // fillColor: '#f03',
+  // fillOpacity: 0.5,
+  // radius: 10
+  // }).addTo(map.value);
 
   map.value.on('click', onMapClick);
   await loadLogs();
+  await loadMapData();
   
   L.control.layers({}, {
-    'Detecciones': detectionsLayer,
-    'Pheromone Traps': trapLayer
+    'Detections': detectionsLayer,
+    'Pheromone Traps': trapLayer,
+    'Starting Points': startLayer,
+    'Detection Areas': polygonLayer
   }, { collapsed: false }).addTo(map.value);
 });
 </script>

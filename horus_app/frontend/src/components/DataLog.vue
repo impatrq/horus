@@ -43,17 +43,21 @@
         body: JSON.stringify({ 
             ...(props.filtered.date ? { date: props.filtered.date } : {}), 
             ...(props.filtered.time ? { time: props.filtered.time } : {}),
-            ...(props.filtered.robot_id ? { time: props.filtered.robot_id } : {}),
-            ...(props.filtered.plague_type ? { time: props.filtered.plague_type } : {}),
-            ...(props.filtered.pheromone_trap ? { time: props.filtered.pheromone_trap } : {}),
-            ...(props.filtered.image_id ? { time: props.filtered.image_id } : {}),
-            ...(props.filtered.probability ? { time: props.filtered.probability } : {}),
-            ...(props.filtered.coordinates ? { time: props.filtered.coordinates } : {}),
+            ...(props.filtered.robot_id ? { robot_id: props.filtered.robot_id } : {}),
+            ...(props.filtered.plague_type ? { plague_type: props.filtered.plague_type } : {}),
+            ...(props.filtered.pheromone_trap ? { pheromone_trap: props.filtered.pheromone_trap } : {}),
+            ...(props.filtered.image_id ? { image_id: props.filtered.image_id } : {}),
+            ...(props.filtered.probability ? { probability: props.filtered.probability } : {}),
+            ...(props.filtered.coordinates ? { coordinates: props.filtered.coordinates } : {}),
             ...(props.ordered.orderType ? { order: props.ordered.orderType } : {}),
         })};
-        const response = await fetch("http://localhost:3000/api/filter", requestOptions);
-        const data = await response.json();
-        listLogs.value = data;
+        try {
+            const response = await fetch("http://localhost:3000/api/filter", requestOptions);
+            const data = await response.json();
+            listLogs.value = data;
+        } catch (err) {
+            console.error("Fetch error: ", err)
+        }
     }
 
     function resetCheck(){

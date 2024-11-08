@@ -3,14 +3,14 @@
         <h3>Order by</h3>
         <div class="orderfilter">
             <select v-model="ordertype" @change="emitOrder">
-                <option value="date-time" selected>Día y Hora</option>
-                <option value="time">Hora</option>
-                <option value="image_id">ID Imagen</option>
-                <option value="plague_type">Tipo de Plaga:</option>
-                <option value="pheromone_trap">Trampa de feromonas</option>
-                <option value="robot_id">ID Robot</option>
-                <option value="probability">Probabilidad</option>
-                <option value="coordinates">Coordenadas</option>
+                <option value="date-time" selected>Date</option>
+                <option value="time">Time</option>
+                <option value="image_id">Image ID</option>
+                <option value="plague_type">Plague Type</option>
+                <option value="pheromone_trap">Pheromone Trap</option>
+                <option value="robot_id">Robot ID</option>
+                <option value="probability">Probability</option>
+                <option value="coordinates">Coordinates</option>
             </select>
             <select id="direction" v-model="direction" @change="emitOrder">
                 <option value="asc">⬆️</option>

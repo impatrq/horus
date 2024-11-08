@@ -3,16 +3,16 @@
         <div class="superior">
             <div class="center-circle">
                 <div class="circle">
-                    {{robot}}
+                    <p>{{robot}}</p>
                 </div>
             </div>
-            <button @click="$emit('deleteRobot', id+1), console.log(robot, id)"><img src="../assets/boton-menos.png"></img></button>
+            <button @click="$emit('deleteRobot', id+1)"><img src="../assets/boton-menos.png"></img></button>
         </div>
-        <h4>ID: {{id+1}}</h4>
-        <h4>Batería Restante:</h4>
-        <h4>Tiempo Restante:</h4><p></p>
-        <h4>Último Log:</h4><p></p>
-        <h4>Coordenadas:</h4><p></p>
+        <h4>Robot ID: {{id+1}}</h4>
+        <h4>Battery left:</h4>
+        <h4>Time left:</h4>
+        <h4>Last Log:</h4>
+        <h4>Coordinates:</h4>
     </div>
 </template>
 
@@ -35,6 +35,9 @@ defineProps({
     transform: translateX(-50%);
     color: white;
     text-align: center;
+    justify-content: center;
+    align-content: center ;
+    padding-top: 0.5;   
 }
 
 .center-circle{
@@ -79,6 +82,10 @@ button{
 
 p, h4{
     margin: 0px
+}
+
+p {
+    padding-top: 2rem
 }
 
 img {

@@ -1,16 +1,16 @@
 <template>
   <div class="outer">
     <div class="opacity-zoom" v-if="showZoom" @click="showZoom = false"></div>
-    <div class="big-image-container" v-if="showZoom">
+    <div class="big-image-container" v-if="showZoom" @click="showZoom = false">
       <img :src="zoomSource" alt="Loaded log" class="zoomed-image"></img>
     </div>
     <div class="input-section">
       <input type="file" accept="jpg" @change="onFileInput" multiple class='hidden' id='file_input' />
-      <label for='file_input' class='button'>Cargar Imágenes</label>
-      <button @click="exportImages">Exportar Imágenes</button>
+      <label for='file_input' class='button'>Load Images</label>
+      <button @click="exportImages">Export Images</button>
     </div>
     <div class="images-section">
-      <h3 v-if='noImages' class="noImages">No hay imágenes cargadas</h3>
+      <h3 v-if='noImages' class="noImages">No Images</h3>
       <div v-for="(image, index) in images" :key="index" class="image-container">
         <ImagesDisplay :source="image" @zoom-in="zoom"/>
       </div>
@@ -54,6 +54,7 @@ const storeImage = async (file) => {
   const store = transaction.objectStore('images');
   await store.put({ name: file.name, file })
   await transaction.done;
+  noImages.value = false
 };
 
 const loadImagesFromDB = async () => {
@@ -87,7 +88,7 @@ const onFileInput = async (event) => {
 
 const exportImages = async () => {
   const transaction = db.transaction('images', 'readonly');
-  const store = tx.objectStore('images');
+  const store = transaction.objectStore('images');
   const allImages = await store.getAll();
 
   const zip = new JSZip();
@@ -146,23 +147,29 @@ img {
 .opacity-zoom {
   background-color: black;
   opacity: 0.5;
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
-}
-.big-image-container {
-  width: 75%;
-  opacity: 1;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  position: absolute;
-  left: 12.5%
+  z-index: 999
+}
+.big-image-container {
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  position: fixed;
+  z-index: 1000;
+  height: 100%;
+  width: 100%
 }
 .zoomed-image {
-  width: 100%;
-  opacity: 1;
-  z-index: 5;
+  max-width: 90%; /* Ensures the image doesn't overflow */
+  max-height: 90%; /* Ensures the image fits within the viewport */
+  z-index: 1001;
+  opacity: 1
 }
 .noImages{
   align-self: center
