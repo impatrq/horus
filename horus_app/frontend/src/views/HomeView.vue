@@ -8,29 +8,33 @@
       <section style="display:flex; align-items: center">
         <h5>Center Map:</h5>
         <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter' placeholder="Coordinates"></input>
+        <div class="error" v-if='center_error'><img src="../assets/error.png"></img></div>
       </section>
 
       <section style="display:flex; align-items: center">
         <h5>Add Pheromone Trap: </h5>
         <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap(1)' placeholder="Coordinates"></input>
         <input id='effect-radius' v-model='trapRadius' @change='addTrap(0)' placeholder="Effect Radius(km)"></input>
+        <div class="error" v-if="trap_error"><img src="../assets/error.png"></img></div>
       </section>
 
       <section style="display:flex; align-items: center">
         <h5>Add Route Starting Point: </h5>
         <input id='starting-point' v-model='startCoordinates' @change='addStart(1)' placeholder='Coordinates'></input>
         <input id='robot-id' v-model='startId' @change='addStart(0)' placeholder='Robot ID'></input>
+        <div class="error" v-if="start_error"><img src="../assets/error.png"></img></div>
       </section>
 
       <section id='area' style="display:flex; align-items: center">
         <h5>Add Survey Area: </h5>
-        <div style="flex-direction: column">
+        <div class='polygon-text'>
           <input id='polygon1' v-model='polygonCoordinates1' @change='addPolygon(0)' placeholder='Top Left Point'></input>
           <input id='polygon2' v-model='polygonCoordinates2' @change='addPolygon(1)' placeholder='Top Right Point'></input>
-          <input id='polygon3' v-model='polygonRobot_ID' @change='addPolygon(4)' placeholder='Robot ID'></input>
-          <input id='polygon4' v-model='polygonCoordinates4' @change='addPolygon(3)' placeholder='Bottom Right Point'></input>
           <input v-model='polygonCoordinates3' @change='addPolygon(2)' placeholder='Bottom Left Point'></input>
+          <input id='polygon4' v-model='polygonCoordinates4' @change='addPolygon(3)' placeholder='Bottom Right Point'></input>
+          <input id='polygon3' v-model='polygonRobot_ID' @change='addPolygon(4)' placeholder='Robot ID'></input>
         </div>
+        <div class="error" v-if="polygon_error"><img src="../assets/error.png"></img></div>
       </section>
     </div>
   </div>
@@ -48,7 +52,6 @@ const map = ref();
 const mapContainer = ref();
 const popup = L.popup();
 const centerCoordinates = ref()
-const offlineMap = ref()
 let detectionsLayer = ref()
 let trapLayer = ref()
 const trapCoordinates = ref()
@@ -89,6 +92,11 @@ const filter = ref({
 })
 const zoom = ref([51.505, -0.09])
 
+const center_error = ref(false)
+const trap_error = ref(false)
+const start_error = ref(false)
+const polygon_error = ref(false)
+
 // RED ICON (para los logs)
 // el unico otro marcador usa el default
 const redOptions = {
@@ -105,8 +113,6 @@ const redMarker = {
   icon: redIcon
 }
 
-// BRIGHT ORANGE (ROBOT)
-
 function onMapClick(e) {
   popup
     .setLatLng(e.latlng)
@@ -117,8 +123,15 @@ function onMapClick(e) {
 function updateCenter() {
   console.log(centerCoordinates.value)
   const coordinates = centerCoordinates.value.split(",").map(Number);
-  map.value.setView(coordinates, 13);
-  postToDB('zoom_coordinates', coordinates)
+  try {
+    map.value.setView(coordinates, 13);
+    postToDB('zoom_coordinates', coordinates)
+    center_error.value = false
+    centerCoordinates.value = ''
+  } catch(err) {
+    center_error.value = true
+    centerCoordinates.value = ''
+  }
 }
 
 
@@ -171,7 +184,6 @@ async function loadMapData() {
     let elements = await data.json()
 
     for (const element of elements) {
-      console.log('start', element)
       const marker = L.marker(element.starting_point).addTo(startLayer)
       marker.bindPopup(`Start at: ${element.starting_point[0]}, ${element.starting_point[1]}<br>From Robot ${element.id}`);
 
@@ -248,9 +260,16 @@ const addTrap = (field) => {
       trapRadius.value = ''
       trapFlag.radius = ''
       trapFlag.coordinates = ''
+
+      trap_error.value = false
     } catch (error) {
       console.error('Error creating marker:', error.message);
-      alert('Failed to create marker. Please provide valid coordinates.');
+      trapCoordinates.value = ''
+      trapRadius.value = ''
+      trapFlag.radius = ''
+      trapFlag.coordinates = ''
+
+      trap_error.value = true
     }
   }
 }
@@ -269,7 +288,7 @@ const addStart = (field) => {
       const coordinates = startCoordinates.value.split(',').map(Number);
 
       if (coordinates.length !== 2 || coordinates.some(isNaN)) {
-        throw new Error('Coordenadas tienen que tener formato "x,y"');
+        throw new Error('Coordinate Format Error');
       }
 
       const marker = L.marker(coordinates).addTo(startLayer)
@@ -285,9 +304,17 @@ const addStart = (field) => {
 
       startCoordinates.value = ''
       startId.value = ''
+
+      start_error.value = false
     } catch (error) {
       console.error('Error creating marker:', error.message);
-      alert('Failed to create marker. Please provide valid coordinates.');
+      startFlag.coordinates = false
+      startFlag.id = false
+
+      startCoordinates.value = ''
+      startId.value = ''
+
+      start_error.value = true
     }
   }
 }
@@ -323,7 +350,7 @@ const addPolygon = (field) => {
         coordinates[2],
         coordinates[3]
       ]).addTo(polygonLayer);
-      polygon.bindPopup(`Survey zone from $(polygonRobotID.value)`);
+      polygon.bindPopup(`Survey zone from ${polygonRobotID.value}`);
 
       polygon.on('dblclick', async function() {
         polygonLayer.removeLayer(polygon);
@@ -343,24 +370,64 @@ const addPolygon = (field) => {
       polygonCoordinates3.value = ''
       polygonCoordinates4.value = ''
       polygonRobot_ID.value = ''
+
+      polygon_error.value = false
     } catch (error) {
       console.error('Error creating polygon:', error.message);
-      alert('Failed to create marker. Please provide valid coordinates.');
+      polygonFlag.coordinates1 = false
+      polygonFlag.coordinates2 = false
+      polygonFlag.coordinates3 = false
+      polygonFlag.coordinates4 = false
+      polygonFlag.robot_id = false
+
+      polygonCoordinates1.value = ''
+      polygonCoordinates2.value = ''
+      polygonCoordinates3.value = ''
+      polygonCoordinates4.value = ''
+      polygonRobot_ID.value = ''
+
+      polygon_error.value = true
     }
   }
 }
 
 async function postToDB(type, coordinates, id, radius) {
   console.log('echo in postToDB')
-  const requestOptions = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    [type]: coordinates,
-    ...(id !== null && { id }),
-    ...(radius !== null && { radius })
-  })};
-  const response = await fetch(`http://localhost:3000/api/store/${type}`, requestOptions);
+  try {
+    const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      [type]: coordinates,
+      ...(id !== null && { id }),
+      ...(radius !== null && { radius })
+    })};
+    const response = await fetch(`http://localhost:3000/api/store/${type}`, requestOptions);
+  } catch (err) {
+    alert('Server Connection Error')
+    // Poner inputs a cero o no deja utilizar los inputs
+    trapCoordinates.value = ''
+    trapRadius.value = ''
+    trapFlag.radius = ''
+    trapFlag.coordinates = ''
+
+    startFlag.coordinates = false
+    startFlag.id = false
+    startCoordinates.value = ''
+    startId.value = ''
+
+    polygonFlag.coordinates1 = false
+    polygonFlag.coordinates2 = false
+    polygonFlag.coordinates3 = false
+    polygonFlag.coordinates4 = false
+    polygonFlag.robot_id = false
+
+    polygonCoordinates1.value = ''
+    polygonCoordinates2.value = ''
+    polygonCoordinates3.value = ''
+    polygonCoordinates4.value = ''
+    polygonRobot_ID.value = ''
+  }
 }
 
 const updateFilter = async ({ key, value }) => {
@@ -368,27 +435,27 @@ const updateFilter = async ({ key, value }) => {
   console.log(filter.value.date)
   try{
     const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-      ...(filter.value.date ? { date: filter.value.date } : {}), 
-      ...(filter.value.time ? { time: filter.value.time } : {}),
-      ...(filter.value.robot_id ? { robot_id: filter.value.robot_id } : {}),
-      ...(filter.value.plague_type ? { plague_type: filter.value.plague_type } : {}),
-      ...(filter.value.pheromone_trap ? { pheromone_trap: filter.value.pheromone_trap } : {}),
-      ...(filter.value.image_id ? { image_id: filter.value.image_id } : {}),
-      ...(filter.value.probability ? { probability: filter.value.probability } : {}),
-      ...(filter.value.coordinates ? { coordinates: filter.value.coordinates } : {}),
-  })};
-  const response = await fetch("http://localhost:3000/api/map/filter", requestOptions);
-  const data = await response.json()
-
-  detectionsLayer.clearLayers();
-  for (const log of data) {
-    const marker = L.marker(log.coordinates).addTo(detectionsLayer)
-    console.log('marker written')
-    // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
-  }
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        ...(filter.value.date ? { date: filter.value.date } : {}), 
+        ...(filter.value.time ? { time: filter.value.time } : {}),
+        ...(filter.value.robot_id ? { robot_id: filter.value.robot_id } : {}),
+        ...(filter.value.plague_type ? { plague_type: filter.value.plague_type } : {}),
+        ...(filter.value.pheromone_trap ? { pheromone_trap: filter.value.pheromone_trap } : {}),
+        ...(filter.value.image_id ? { image_id: filter.value.image_id } : {}),
+        ...(filter.value.probability ? { probability: filter.value.probability } : {}),
+        ...(filter.value.coordinates ? { coordinates: filter.value.coordinates } : {}),
+      })
+    }
+    const response = await fetch("http://localhost:3000/api/map/filter", requestOptions);
+    const data = await response.json()
+    detectionsLayer.clearLayers();
+    for (const log of data) {
+      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      console.log('marker written')
+      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+    }
   } catch (err) {
     console.log("Error al fetchear luego de actualizar filtro")
   }
@@ -485,6 +552,21 @@ h5 {
   margin-block-start: 1em;
   margin-block-end: 1em;
   margin-right: 1em
+}
+
+img {
+  width: 100%;
+}
+
+.error{
+  display: flex;
+  height: 1rem;
+  padding: 5px
+}
+
+.polygon-text{
+  flex-direction: column;
+  width: 65%
 }
 
 .hidden{
