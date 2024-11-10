@@ -1,3 +1,4 @@
+#Importo Librerías a usar
 from machine import Pin, PWM
 from time import sleep
 
