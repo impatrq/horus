@@ -1,19 +1,25 @@
 from machine import Pin, PWM
 from time import sleep
 
-# Configuración de los pines GPIO para los motores paso a paso con A4988
-dir1 = Pin(3, Pin.OUT)   # Dirección del motor 1
-step1 = Pin(4, Pin.OUT)  # Paso del motor 1
-dir2 = Pin(5, Pin.OUT)   # Dirección del motor 2
-step2 = Pin(6, Pin.OUT)  # Paso del motor 2
+# Configuración de los pines GPIO para los motores DC con Puente H
+velmot1pwm = PWM(Pin(10))
+velmot2pwm = PWM(Pin(13))
+mot1a = Pin(11, Pin.OUT)   # pin 2b del motor 1
+mot1b = Pin(12, Pin.OUT)
+mot2a = Pin(14, Pin.OUT)   # pin 2a del motor 2
+mot2b = Pin(15, Pin.OUT)
+
+# Configurar la frecuencia de PWM (suele ser 1kHz para motores DC)
+velmot1pwm.freq(1000)
+velmot2pwm.freq(1000)
 
 # Pines de control del brazo tijera y el servo
-dirB = Pin(7, Pin.OUT)   # Dirección del motor del brazo
-stepB = Pin(8, Pin.OUT)  # Paso del motor del brazo
-servo_pin = Pin(9)       # Pin para el control del servo (sin .OUT para PWM)
+dirB = Pin(8, Pin.OUT)   # Dirección del motor del brazo
+stepB = Pin(7, Pin.OUT)  # Paso del motor del brazo
+servo_pin = Pin(2)       # Pin para el control del servo (sin .OUT para PWM)
 
 # Configuración del PWM para el servomotor
-servo_pwm = PWM(servo_pin)  # Configurar pin 9 como salida PWM
+servo_pwm = PWM(servo_pin)  # Configurar pin 2 como salida PWM
 servo_pwm.freq(50)          # Frecuencia de 50Hz (20 ms de período)
 
 # Función para controlar un motor paso a paso con A4988 (usada para el brazo)
@@ -120,4 +126,3 @@ def esperar_pulso(mensaje):
 
 # Iniciar la simulación
 detectar_pulso()
-2212
