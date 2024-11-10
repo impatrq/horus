@@ -156,19 +156,19 @@ app.get('/api/map/logs', async (req,res) => {
 })
 
 app.get('/api/map/pheromone_traps', async (req,res) => {
-  let find = await maptrap.find({}, { trap_coordinates: 1 })
+  let find = await maptrap.find({}, { trap_coordinates: 1, radius: 1 })
   console.log(find)
   res.json(find)
 })
 
 app.get('/api/map/start_points', async (req,res) => {
-  let find = await mapstart.find({}, { starting_point: 1 })
+  let find = await mapstart.find({}, { starting_point: 1, id: 1 })
   console.log(find)
   res.json(find)
 })
 
 app.get('/api/map/polygons', async (req,res) => {
-  let find = await mappolygon.find({}, { polygon_coordinates: 1})
+  let find = await mappolygon.find({}, { polygon_coordinates: 1, id: 1})
   console.log(find)
   res.json(find)
 })
@@ -230,6 +230,7 @@ app.post('/api/store/trap_coordinates', async (req,res) => {
 
 app.post('/api/store/starting_point', async (req,res) => {
   console.log(req.body)
+  const find = await mapstart.find({id: req.body.id})
   if (find.length > 0) {
     mapstart.deleteOne({id: req.body.id})
   }

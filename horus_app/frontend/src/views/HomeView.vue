@@ -42,13 +42,12 @@ import L from "leaflet";
 import 'leaflet.offline'
 import { openDB } from 'idb'
 import DateFilter from '@/components/DateFilter.vue';
-import OrangeIcon from '@/assets/icono-naranja-claro.png'
+import RedIcon from '@/assets/marker-red.png'
 
 const map = ref();
 const mapContainer = ref();
 const popup = L.popup();
 const centerCoordinates = ref()
-let db
 const offlineMap = ref()
 let detectionsLayer = ref()
 let trapLayer = ref()
@@ -90,21 +89,20 @@ const filter = ref({
 })
 const zoom = ref([51.505, -0.09])
 
-// DARK ORANGE ICON (Detecciones)
-
-// ORANGEICON (Punto de inicio)
-const orangeOptions = {
-  iconUrl: OrangeIcon,
-  iconSize: [10, 10]
+// RED ICON (para los logs)
+// el unico otro marcador usa el default
+const redOptions = {
+  iconUrl: RedIcon,
+  iconSize: [25, 41]
 }
 
-const orangeIcon = L.icon(orangeOptions);
+const redIcon = L.icon(redOptions);
 
-const orangeMarker = {
-  title: "Starting Point",
+const redMarker = {
+  title: "Detection",
   clickable: true,
   draggable: true,
-  icon: orangeIcon
+  icon: redIcon
 }
 
 // BRIGHT ORANGE (ROBOT)
@@ -123,26 +121,6 @@ function updateCenter() {
   postToDB('zoom_coordinates', coordinates)
 }
 
-const storeMap = async (event) => {
-  const files = event.target.files;
-  const transaction = db.transaction('map', 'readwrite');
-  const store = transaction.objectStore('map');
-  await store.clear();
-  for (const file of files) {
-    await store.put({ name: file.name, file })
-    await transaction.done;
-  }
-};
-
-const initDB = async () => {
-  db = await openDB('map-store', 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains('map')) {
-        db.createObjectStore('map', { keyPath: 'name' })
-      }
-    },
-  })
-}
 
 async function loadLogs() {
   try {
@@ -152,10 +130,8 @@ async function loadLogs() {
     console.log('logs', logs)
 
     for (const log of logs) {
-      const marker = L.marker(log.coordinates, orangeMarker).addTo(detectionsLayer)
-      console.log('marker written')
-      marker.bindPopup(`Trap at: ${log.coordinates[0]}, ${log.coordinates[1]}`);
-      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+      const marker = L.marker(log.coordinates, redMarker).addTo(detectionsLayer)
+      marker.bindPopup(`Detection at: ${log.coordinates[0]}, ${log.coordinates[1]}`);
     }    
   } catch (err) {
     alert('Server Connection Error')
@@ -170,11 +146,11 @@ async function loadMapData() {
     for (const element of elements) {
       console.log('element', element.trap_coordinates)
       let circle = L.circle(element.trap_coordinates, {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
+        color: '#800080',
+        fillColor: '#800080',
+        fillOpacity: 0.2,
         // Leaflet uses metres not km, that's why the 1000
-        radius: trapRadius.value * 1000
+        radius: element.radius * 1000
       }).addTo(trapLayer);
       circle.bindPopup(`Trap at: ${element.trap_coordinates[0]}, ${element.trap_coordinates[1]}`);
 
@@ -197,7 +173,7 @@ async function loadMapData() {
     for (const element of elements) {
       console.log('start', element)
       const marker = L.marker(element.starting_point).addTo(startLayer)
-      marker.bindPopup(`Trap at: ${element.starting_point[0]}, ${element.starting_point[1]}`);
+      marker.bindPopup(`Start at: ${element.starting_point[0]}, ${element.starting_point[1]}<br>From Robot ${element.id}`);
 
       marker.on('dblclick', async function() {
         startLayer.removeLayer(marker);
@@ -221,7 +197,7 @@ async function loadMapData() {
         element.polygon_coordinates[2],
         element.polygon_coordinates[3]
       ]).addTo(polygonLayer);
-      polygon.bindPopup(`Area de rastreo de robot $(element.id)`);
+      polygon.bindPopup(`Survey zone from Robot ${element.id}`);
 
       polygon.on('dblclick', async function() {
         polygonLayer.removeLayer(polygon);
@@ -253,12 +229,13 @@ const addTrap = (field) => {
 
       console.log(coordinates);
       let circle = L.circle(coordinates, {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
+        color: '#800080',
+        fillColor: '#800080',
+        fillOpacity: 0.2,
         // Leaflet uses metres not km, that's why the 1000
         radius: trapRadius.value * 1000
       }).addTo(trapLayer);
+      circle.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`);
       postToDB('trap_coordinates', coordinates, null, trapRadius.value);
 
       circle.on('dblclick', async function() {
@@ -296,11 +273,13 @@ const addStart = (field) => {
       }
 
       const marker = L.marker(coordinates).addTo(startLayer)
+      marker.bindPopup(`Start at: ${coordinates[0]}, ${coordinates[1]}`);
+
       marker.on('dblclick', async function() {
         startLayer.removeLayer(marker);
         const api = await fetch(`http://localhost:3000/api/delete/starting_point/${element._id}`, { method: 'DELETE' })
       });
-      postToDB('trap_coordinates', coordinates, startId.value)
+      postToDB('starting_point', coordinates, startId.value)
       startFlag.coordinates = false
       startFlag.id = false
 
@@ -344,6 +323,7 @@ const addPolygon = (field) => {
         coordinates[2],
         coordinates[3]
       ]).addTo(polygonLayer);
+      polygon.bindPopup(`Survey zone from $(polygonRobotID.value)`);
 
       polygon.on('dblclick', async function() {
         polygonLayer.removeLayer(polygon);
@@ -444,9 +424,6 @@ const resetFilter = async (key) => {
   }
 }
 
-const storeZoom = async () => {
-  postToDB()
-}
 
 const getZoom = async () => {
   try {
@@ -466,16 +443,13 @@ function downloadTiles() {
 
 onMounted(async () => {
   console.log(zoom.value)
-  await initDB();
   await getZoom();
   console.log(zoom.value)
-  map.value = L.map(mapContainer.value, {doubleClickZoom: false}).setView(zoom.value, 13);
+  map.value = L.map(mapContainer.value, {doubleClickZoom: false, scrollWheelZoom: false}).setView(zoom.value, 13);
   const baseLayer = L.tileLayer.offline("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
-      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    doubleClickZoom: false,
-    zoomAnimation: false,
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map.value);
 
   const controlSaveTiles = L.control.savetiles(
