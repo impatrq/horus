@@ -15,6 +15,7 @@ const robotprofiles = require('./models/robotprofiles')
 const mapzoom = require('./models/mapzoom')
 const bodyParser = require("body-parser")
 const cors = require('cors')
+const fs =  require('fs')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -80,28 +81,6 @@ mongoose.connect(process.env.MONGO_URI)
 //     console.error("Error parsing JSON:", error);
 //   }
 // })
-
-// function haversineDistance(coords1, coords2) {
-//   const R = 6371; // Radius of the Earth in kilometers
-
-//   const lat1 = coords1.lat;
-//   const lon1 = coords1.lon;
-//   const lat2 = coords2.lat;
-//   const lon2 = coords2.lon;
-
-//   const dLat = (lat2 - lat1) * Math.PI / 180;
-//   const dLon = (lon2 - lon1) * Math.PI / 180;
-
-//   const a = 
-//     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-//     Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
-//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//   const distance = R * c; // Distance in kilometers
-
-//   return distance; // Returns distance in kilometers
-// }
 
 // function sendQueue() {
 //   if (commQueue.length === 0) {
@@ -177,7 +156,7 @@ app.get('/api/map/logs', async (req,res) => {
 })
 
 app.get('/api/map/pheromone_traps', async (req,res) => {
-  let find = await maptrap.find({}, { trap_coordinates: 1})
+  let find = await maptrap.find({}, { trap_coordinates: 1 })
   console.log(find)
   res.json(find)
 })
@@ -235,7 +214,10 @@ function dateFormat(date) {
 
 app.post('/api/store/polygon_coordinates', async (req,res) => {
   console.log(req.body)
-  mappolygon.deleteOne({id: req.body.id})
+  const find = await mappolygon.find({id: req.body.id})
+  if (find.length > 0) {
+    mappolygon.deleteOne({id: req.body.id})
+  }
   mappolygon.create(req.body)
   updateRobotMapData(1)
 })
@@ -248,7 +230,9 @@ app.post('/api/store/trap_coordinates', async (req,res) => {
 
 app.post('/api/store/starting_point', async (req,res) => {
   console.log(req.body)
-  mapstart.deleteOne({id: req.body.id})
+  if (find.length > 0) {
+    mapstart.deleteOne({id: req.body.id})
+  }
   mapstart.create(req.body)
   updateRobotMapData(1)
 })
@@ -311,12 +295,74 @@ async function updateRobotMapData (id){
   // commQueue.push(robotMapData)
 }
 
-app.get('api/robot/remove', async (req, res) => {
+app.get('/api/robot/remove', async (req, res) => {
   const getinfoJSON = {
     type: 'getinfo',
   }
   // commQueue.push()
 })
+
+app.post('/api/offline', async (req, res) => {
+  console.log(req.body)
+  // El primer elemento del array es un objecto con datos del robot
+  const check = robotprofiles.exists({robot_id: req.body[0].robot_id})
+  if (!check){
+    robotprofiles.create(req.body[0])
+  }
+  robotprofiles.updateOne({ robot_id: req.body[0].robot_id},{
+    location: req.body[0].location,
+    battery: req.body[0].battery,
+    time_left: req.body[0].time_left,
+    last_log: req.body[0].last_log
+  })
+
+  // El segundo elemento del array es un array json con logs
+  for (const item of req.body.lenght[1]){
+    const traps = await maptrap.find({}, {coordinates:1, _id:0})
+    for (const trap of traps) {
+      const maxDistance = trap.radius
+      const distance = haversineDistance(trap.coordinates, req.body[0].location)
+      if (distance <= maxDistance) {
+        serial_data.pheromone_trap = true
+        // Si encuentra una coincidencia, ya es suficiente
+        break
+      }
+    }
+    robotdata.create(item);
+  }
+
+  // Ahora tengo que devolver datos para poner en el pendrive
+  const find_area = await mappolygon({id: req.body[0].robot_id})
+  const find_point = await mapstart({id: req.body[0].robot_id})
+  const answer = {
+    polygon_coordinates: find_area,
+    starting_point: find_point
+  }
+  res.json(answer)
+})
+
+// Funcion para calcular distancia de coordenadas en km (para la distancia robot-trampa)
+function haversineDistance(coords1, coords2) {
+  const R = 6371; // Radius of the Earth in kilometers
+
+  const lat1 = coords1[0];
+  const lon1 = coords1[1];
+  const lat2 = coords2[0];
+  const lon2 = coords2[1];
+
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in kilometers
+
+  return distance; // Returns distance in kilometers
+}
 
 app.listen(process.env.PORT, () => console.log(`App listening at http://localhost:${process.env.PORT}`))
 console.log("Hi")
