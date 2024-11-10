@@ -11,15 +11,9 @@
       </section>
 
       <section style="display:flex; align-items: center">
-        <h5>Subir mapa offline: </h5>
-        <button @click="downloadTiles">Descargar</button>
-        <!-- <input type='file' id='offline-map' @change='storeMap' class='hidden'></input> -->
-        <!-- <label for='offline-map' class='button'>Mapa Offline</label> -->
-      </section>
-
-      <section style="display:flex; align-items: center">
         <h5>Add Pheromone Trap: </h5>
-        <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap' placeholder="Coordinates"></input>
+        <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap(1)' placeholder="Coordinates"></input>
+        <input id='effect-radius' v-model='trapRadius' @change='addTrap(0)' placeholder="Effect Radius(km)"></input>
       </section>
 
       <section style="display:flex; align-items: center">
@@ -48,6 +42,7 @@ import L from "leaflet";
 import 'leaflet.offline'
 import { openDB } from 'idb'
 import DateFilter from '@/components/DateFilter.vue';
+import OrangeIcon from '@/assets/icono-naranja-claro.png'
 
 const map = ref();
 const mapContainer = ref();
@@ -58,6 +53,11 @@ const offlineMap = ref()
 let detectionsLayer = ref()
 let trapLayer = ref()
 const trapCoordinates = ref()
+const trapRadius = ref()
+const trapFlag = ref({
+  coordinates: false,
+  radius: false
+})
 let startLayer = ref()
 const startCoordinates = ref()
 const startId = ref()
@@ -89,6 +89,25 @@ const filter = ref({
   coordinates:''
 })
 const zoom = ref([51.505, -0.09])
+
+// DARK ORANGE ICON (Detecciones)
+
+// ORANGEICON (Punto de inicio)
+const orangeOptions = {
+  iconUrl: OrangeIcon,
+  iconSize: [10, 10]
+}
+
+const orangeIcon = L.icon(orangeOptions);
+
+const orangeMarker = {
+  title: "Starting Point",
+  clickable: true,
+  draggable: true,
+  icon: orangeIcon
+}
+
+// BRIGHT ORANGE (ROBOT)
 
 function onMapClick(e) {
   popup
@@ -125,19 +144,6 @@ const initDB = async () => {
   })
 }
 
-const loadImagesFromDB = async () => {
-  noImages.value = false
-  const tx = db.transaction('images', 'readonly');
-  const store = tx.objectStore('images');
-  const allImages = await store.getAll();
-  
-  if (!images.value || images.value.length === 0){
-    noImages.value = true
-  } else {
-    noImages.value = false
-  }
-};
-
 async function loadLogs() {
   try {
     const data = await fetch('http://localhost:3000/api/map/logs')
@@ -146,7 +152,7 @@ async function loadLogs() {
     console.log('logs', logs)
 
     for (const log of logs) {
-      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      const marker = L.marker(log.coordinates, orangeMarker).addTo(detectionsLayer)
       console.log('marker written')
       marker.bindPopup(`Trap at: ${log.coordinates[0]}, ${log.coordinates[1]}`);
       // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
@@ -163,11 +169,17 @@ async function loadMapData() {
     
     for (const element of elements) {
       console.log('element', element.trap_coordinates)
-      let marker = L.marker(element.trap_coordinates).addTo(trapLayer)
-      marker.bindPopup(`Trap at: ${element.trap_coordinates[0]}, ${element.trap_coordinates[1]}`);
+      let circle = L.circle(element.trap_coordinates, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        // Leaflet uses metres not km, that's why the 1000
+        radius: trapRadius.value * 1000
+      }).addTo(trapLayer);
+      circle.bindPopup(`Trap at: ${element.trap_coordinates[0]}, ${element.trap_coordinates[1]}`);
 
-      marker.on('dblclick', async function() {
-        trapLayer.removeLayer(marker);
+      circle.on('dblclick', async function() {
+        trapLayer.removeLayer(circle);
         console.log(element._id)
         const api = await fetch(`http://localhost:3000/api/delete/trap_coordinates/${element._id}`, { method: 'DELETE' })
       });
@@ -175,7 +187,7 @@ async function loadMapData() {
     console.log('hello from loadMapData')
   } catch(err) {
     alert('Server Connection Error')
-    console.log('Problem loading pheromone traps')
+    console.log('Problem loading pheromone traps', err)
   }
 
   try {
@@ -223,9 +235,15 @@ async function loadMapData() {
   }
 }
 
-const addTrap = () => {
+const addTrap = (field) => {
   console.log(trapCoordinates.value)
-  if (trapCoordinates.value && trapCoordinates.value !== '0' && trapCoordinates.value !== '[0]') {
+  if (field === 1) {
+    trapFlag.coordinates = true
+  } else {
+    trapFlag.radius = true
+  }
+
+  if (trapFlag.coordinates === true && trapFlag.radius === true) {
     try {
       const coordinates = trapCoordinates.value.split(',').map(Number);
 
@@ -234,9 +252,25 @@ const addTrap = () => {
       }
 
       console.log(coordinates);
-      const marker = L.marker(coordinates).addTo(trapLayer);
-      postToDB('trap_coordinates', coordinates);
+      let circle = L.circle(coordinates, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        // Leaflet uses metres not km, that's why the 1000
+        radius: trapRadius.value * 1000
+      }).addTo(trapLayer);
+      postToDB('trap_coordinates', coordinates, null, trapRadius.value);
+
+      circle.on('dblclick', async function() {
+        trapLayer.removeLayer(circle);
+        console.log(element._id)
+        const api = await fetch(`http://localhost:3000/api/delete/trap_coordinates/${element._id}`, { method: 'DELETE' })
+      });
+
       trapCoordinates.value = ''
+      trapRadius.value = ''
+      trapFlag.radius = ''
+      trapFlag.coordinates = ''
     } catch (error) {
       console.error('Error creating marker:', error.message);
       alert('Failed to create marker. Please provide valid coordinates.');
@@ -262,9 +296,13 @@ const addStart = (field) => {
       }
 
       const marker = L.marker(coordinates).addTo(startLayer)
+      marker.on('dblclick', async function() {
+        startLayer.removeLayer(marker);
+        const api = await fetch(`http://localhost:3000/api/delete/starting_point/${element._id}`, { method: 'DELETE' })
+      });
       postToDB('trap_coordinates', coordinates, startId.value)
       startFlag.coordinates = false
-      startFlag.coordinates = false
+      startFlag.id = false
 
       startCoordinates.value = ''
       startId.value = ''
@@ -307,6 +345,12 @@ const addPolygon = (field) => {
         coordinates[3]
       ]).addTo(polygonLayer);
 
+      polygon.on('dblclick', async function() {
+        polygonLayer.removeLayer(polygon);
+        console.log('deleting polygon')
+        const api = await fetch(`http://localhost:3000/api/delete/polygon_coordinates/${element._id}`, { method: 'DELETE' })
+      });
+
       postToDB('polygon_coordinates', coordinates, polygonRobot_ID.value)
       polygonFlag.coordinates1 = false
       polygonFlag.coordinates2 = false
@@ -326,14 +370,15 @@ const addPolygon = (field) => {
   }
 }
 
-async function postToDB(type, coordinates, id) {
+async function postToDB(type, coordinates, id, radius) {
   console.log('echo in postToDB')
   const requestOptions = {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     [type]: coordinates,
-    ...(id !== null && { id })
+    ...(id !== null && { id }),
+    ...(radius !== null && { radius })
   })};
   const response = await fetch(`http://localhost:3000/api/store/${type}`, requestOptions);
 }
@@ -424,7 +469,7 @@ onMounted(async () => {
   await initDB();
   await getZoom();
   console.log(zoom.value)
-  map.value = L.map(mapContainer.value).setView(zoom.value, 13);
+  map.value = L.map(mapContainer.value, {doubleClickZoom: false}).setView(zoom.value, 13);
   const baseLayer = L.tileLayer.offline("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
@@ -447,13 +492,6 @@ onMounted(async () => {
   trapLayer = L.layerGroup().addTo(map.value)
   startLayer = L.layerGroup().addTo(map.value)
   polygonLayer = L.layerGroup().addTo(map.value)
-
-  // const circle = L.circle([51.508, -0.11], {
-  // color: 'red',
-  // fillColor: '#f03',
-  // fillOpacity: 0.5,
-  // radius: 10
-  // }).addTo(map.value);
 
   map.value.on('click', onMapClick);
   await loadLogs();
