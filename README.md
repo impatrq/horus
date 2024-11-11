@@ -6,9 +6,9 @@
 
 &nbsp;
 
-| Página web | Email | Instagram |
-|------------|-------|-----------|
-|[agro_horus.app](https://horus-pagina-web.vercel.app)|agroohoruss@gmail.com|[@agro_horus](https://www.instagram.com/agro_horus/)|
+| Página web | Email | Instagram | YouTube |
+|------------|-------|-----------|---------|
+|[agro_horus.app](https://horus-pagina-web.vercel.app)|agroohoruss@gmail.com|[@agro_horus](https://www.instagram.com/agro_horus/)|[agro_horus.video](https://youtu.be/Rt4uS1dhISc?si=q_koguGqGLUvtIlc)|
 
 &nbsp;
 
