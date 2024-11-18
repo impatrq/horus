@@ -1,5 +1,5 @@
 <template>
-  <div style="display:flex; min-height:80vh">
+  <div style="display:flex; min-height:80vh; z-index: 1">
     <div ref="mapContainer" style="width: 70vw"></div>
     <div style="display:flex; flex-direction: column; background-color: #E5E5E5; padding: 2rem">
       <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter" />
@@ -28,8 +28,8 @@
       <section id='area' style="display:flex; align-items: center">
         <h5>Add Survey Area: </h5>
         <div class='polygon-text'>
-          <input id='polygon1' v-model='polygonCoordinates1' @change='addPolygon(0)' placeholder='Top Left Point'></input>
-          <input id='polygon2' v-model='polygonCoordinates2' @change='addPolygon(1)' placeholder='Top Right Point'></input>
+          <input id='polygon1' v-model='polygonCoordinates2' @change='addPolygon(1)' placeholder='Top Left Point'></input>
+          <input id='polygon2' v-model='polygonCoordinates1' @change='addPolygon(0)' placeholder='Top Right Point'></input>
           <input v-model='polygonCoordinates3' @change='addPolygon(2)' placeholder='Bottom Left Point'></input>
           <input id='polygon4' v-model='polygonCoordinates4' @change='addPolygon(3)' placeholder='Bottom Right Point'></input>
           <input id='polygon3' v-model='polygonRobot_ID' @change='addPolygon(4)' placeholder='Robot ID'></input>
@@ -47,6 +47,7 @@ import 'leaflet.offline'
 import { openDB } from 'idb'
 import DateFilter from '@/components/DateFilter.vue';
 import RedIcon from '@/assets/marker-red.png'
+import PurpleIcon from '@/assets/marker-purple.png'
 
 const map = ref();
 const mapContainer = ref();
@@ -91,6 +92,7 @@ const filter = ref({
   coordinates:''
 })
 const zoom = ref([51.505, -0.09])
+let robotsLayer = ref()
 
 const center_error = ref(false)
 const trap_error = ref(false)
@@ -98,7 +100,6 @@ const start_error = ref(false)
 const polygon_error = ref(false)
 
 // RED ICON (para los logs)
-// el unico otro marcador usa el default
 const redOptions = {
   iconUrl: RedIcon,
   iconSize: [25, 41]
@@ -109,8 +110,20 @@ const redIcon = L.icon(redOptions);
 const redMarker = {
   title: "Detection",
   clickable: true,
-  draggable: true,
   icon: redIcon
+}
+
+const purpleOptions = {
+  iconUrl: PurpleIcon,
+  iconSize: [25, 41]
+}
+
+const purpleIcon = L.icon(purpleOptions);
+
+const purpleMarker = {
+  title: "Robot",
+  clickable: true,
+  icon: purpleIcon
 }
 
 function onMapClick(e) {
@@ -159,8 +172,8 @@ async function loadMapData() {
     for (const element of elements) {
       console.log('element', element.trap_coordinates)
       let circle = L.circle(element.trap_coordinates, {
-        color: '#800080',
-        fillColor: '#800080',
+        color: '#228B22',
+        fillColor: '#228B22',
         fillOpacity: 0.2,
         // Leaflet uses metres not km, that's why the 1000
         radius: element.radius * 1000
@@ -218,8 +231,22 @@ async function loadMapData() {
       });
     }
   } catch(err) {
-    alert('Server Connection Error')
     console.log('Problem loading polygons', err)
+  }
+
+
+  try {
+    let data = await fetch('http://localhost:3000/api/map/robots')
+    let elements = await data.json()
+    
+    for (const element of elements) {
+      if(element.location.length){
+        const marker = L.marker(element.location, purpleMarker).addTo(robotsLayer)
+        marker.bindPopup(`Robot${element.display_id}<br>Ubicación:${element.location[0]}, ${element.location[1]}`);
+      }
+    }
+  } catch(err) {
+    console.log('Problem loading robot location')
   }
 }
 
@@ -241,8 +268,8 @@ const addTrap = (field) => {
 
       console.log(coordinates);
       let circle = L.circle(coordinates, {
-        color: '#800080',
-        fillColor: '#800080',
+        color: '#228B22',
+        fillColor: '#228B22',
         fillOpacity: 0.2,
         // Leaflet uses metres not km, that's why the 1000
         radius: trapRadius.value * 1000
@@ -252,8 +279,9 @@ const addTrap = (field) => {
 
       circle.on('dblclick', async function() {
         trapLayer.removeLayer(circle);
-        console.log(element._id)
-        const api = await fetch(`http://localhost:3000/api/delete/trap_coordinates/${element._id}`, { method: 'DELETE' })
+
+        // CAMBIAR PARA AGREGAR UN ID PROPIO
+        const api = await fetch(`http://localhost:3000/api/delete/trap_coordinates/${coordinates}`, { method: 'DELETE' })
       });
 
       trapCoordinates.value = ''
@@ -296,7 +324,7 @@ const addStart = (field) => {
 
       marker.on('dblclick', async function() {
         startLayer.removeLayer(marker);
-        const api = await fetch(`http://localhost:3000/api/delete/starting_point/${element._id}`, { method: 'DELETE' })
+        const api = await fetch(`http://localhost:3000/api/delete/starting_point/${startId.value}`, { method: 'DELETE' })
       });
       postToDB('starting_point', coordinates, startId.value)
       startFlag.coordinates = false
@@ -350,12 +378,12 @@ const addPolygon = (field) => {
         coordinates[2],
         coordinates[3]
       ]).addTo(polygonLayer);
-      polygon.bindPopup(`Survey zone from ${polygonRobotID.value}`);
+      polygon.bindPopup(`Survey zone from ${polygonRobot_ID.value}`);
 
       polygon.on('dblclick', async function() {
         polygonLayer.removeLayer(polygon);
         console.log('deleting polygon')
-        const api = await fetch(`http://localhost:3000/api/delete/polygon_coordinates/${element._id}`, { method: 'DELETE' })
+        const api = await fetch(`http://localhost:3000/api/delete/polygon_coordinates/${polygonRobot_ID.value}`, { method: 'DELETE' })
       });
 
       postToDB('polygon_coordinates', coordinates, polygonRobot_ID.value)
@@ -452,9 +480,9 @@ const updateFilter = async ({ key, value }) => {
     const data = await response.json()
     detectionsLayer.clearLayers();
     for (const log of data) {
-      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      const marker = L.marker(log.coordinates, redMarker).addTo(detectionsLayer)
       console.log('marker written')
-      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+      marker.bindPopup(`Detection at: ${coordinates[0]}, ${coordinates[1]}`)
     }
   } catch (err) {
     console.log("Error al fetchear luego de actualizar filtro")
@@ -476,18 +504,18 @@ const resetFilter = async (key) => {
       ...(filter.value.image_id ? { image_id: filter.value.image_id } : {}),
       ...(filter.value.probability ? { probability: filter.value.probability } : {}),
       ...(filter.value.coordinates ? { coordinates: filter.value.coordinates } : {}),
-    })};
+    })}; 
     const response = await fetch("http://localhost:3000/api/map/filter", requestOptions);
     const data = await response.json()
 
     detectionsLayer.clearLayers();
     for (const log of data) {
-      const marker = L.marker(log.coordinates).addTo(detectionsLayer)
+      const marker = L.marker(log.coordinates,redMarker).addTo(detectionsLayer)
       console.log('marker written')
-      // marker.bindPopup(`Trap at: ${coordinates[0]}, ${coordinates[1]}`).openPopup();
+      marker.bindPopup(`Detection at: ${coordinates[0]}, ${coordinates[1]}`)
     }
   } catch (err) {
-    console.log("Error al fetchear luego de actualizar filtro")
+    console.log("Error al fetchear luego de actualizar filtro", err)
   }
 }
 
@@ -502,10 +530,6 @@ const getZoom = async () => {
   } catch (err) {
     alert('Server Connection Error')
   }
-}
-
-function downloadTiles() {
-  baseLayer.getStorage().startDownload([13,14,15]);
 }
 
 onMounted(async () => {
@@ -533,16 +557,18 @@ onMounted(async () => {
   trapLayer = L.layerGroup().addTo(map.value)
   startLayer = L.layerGroup().addTo(map.value)
   polygonLayer = L.layerGroup().addTo(map.value)
+  robotsLayer = L.layerGroup().addTo(map.value)
 
   map.value.on('click', onMapClick);
-  await loadLogs();
-  await loadMapData();
+  await loadLogs()
+  await loadMapData()
   
   L.control.layers({}, {
     'Detections': detectionsLayer,
     'Pheromone Traps': trapLayer,
     'Starting Points': startLayer,
-    'Detection Areas': polygonLayer
+    'Detection Areas': polygonLayer,
+    'Robots': robotsLayer
   }, { collapsed: false }).addTo(map.value);
 });
 </script>
