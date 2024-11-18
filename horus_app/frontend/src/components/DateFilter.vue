@@ -35,8 +35,8 @@
         </div>
         <div class="pheromonetrap-radio" v-if="showIfs.pheromoneTrap">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('pheromoneTrap')"></input>
-            <input type="radio" name="pheromone-trap" v-model="filterInput.pheromone_trap" @change="updateFilter('pheromone_trap', filterInput.value.pheromone_trap)">Yes</input>
-            <input type="radio" name="pheromone-trap" v-model="filterInput.pheromone_trap" @change="updateFilter('pheromone_trap', filterInput.value.pheromone_trap)">No</input>
+            <input type="radio" name="pheromone-trap" @click="updateFilter('pheromone_trap', true)">Yes</input>
+            <input type="radio" name="pheromone-trap" @click="updateFilter('pheromone_trap', false)">No</input>
         </div>
         <div class="Probability-input" v-if="showIfs.probability">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('probability')"></input>
