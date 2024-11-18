@@ -1,6 +1,6 @@
 <template>
     <div class="orderbox">
-        <h3>Order by</h3>
+        <h3>Order By</h3>
         <div class="orderfilter">
             <select v-model="ordertype" @change="emitOrder">
                 <option value="date-time" selected>Date</option>

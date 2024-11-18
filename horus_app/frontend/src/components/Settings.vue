@@ -15,15 +15,11 @@ const exportLogs = async() => {
     try {
         const res = await fetch("http://localhost:3000/api/allLogs");
         const logs = await res.json();
-        const zip = new JSZip();
-        logs.forEach((log, index) => {
-            zip.file(`log_${index + 1}.txt`, JSON.stringify(log, null, 2));
-        });
-
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        
+        const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(zipBlob);
-        link.download = 'horus_logs.zip';
+        link.href = URL.createObjectURL(blob);
+        link.download = 'logs.json';
         link.click();
     } catch (err) {
         alert('Server Connection Error')
@@ -47,9 +43,8 @@ const importLogs = async(event) => {
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.href = url;
-            link.download = 'rx.json';
+            link.download = 'rxsample.json';
             link.click();
-            URL.revokeObjectURL(url);
         } catch (err) {
             alert("Server Connection Error")
         }
@@ -88,5 +83,9 @@ const importLogs = async(event) => {
         border-radius: 5px;
         border: 2px solid #EEEEEE; 
         box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2)
+    }
+
+    a, label{
+        text-decoration: none
     }
 </style>

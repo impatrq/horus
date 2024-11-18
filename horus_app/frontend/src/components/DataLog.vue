@@ -2,14 +2,14 @@
     <div class="frame">
     <!-- {{props.ordered}} -->
         <div class="log" v-for="(log, index) in listLogs" :key="index">
-            <h5>Date: {{log.date}}</h5>
-            <h5>Time: {{log.time}}</h5>
-            <h5>Image ID: {{log.image_id}}</h5>
-            <h5>Robot ID: {{log.robot_id}}</h5>
-            <h5>Plague Type: {{log.plague_type}}</h5>
-            <h5>Phermone Trap: {{log.pheromone_trap}}</h5>
-            <h5>Probability: {{log.probability}}</h5>
-            <h5>Location: {{log.coordinates}}</h5>
+            <h5 class="bold">Date: <span>{{log.date}}</span></h5>
+            <h5 class="bold">Time: <span>{{log.time}}</span></h5>
+            <h5 class="bold">Image ID: <span>{{log.image_id}}</span></h5>
+            <h5 class="bold">Robot ID: <span>{{log.robot_id}}</span></h5>
+            <h5 class="bold">Plague Type: <span>{{log.plague_type}}</span></h5>
+            <h5 class="bold">Phermone Trap: <span>{{log.pheromone_trap}}</span></h5>
+            <h5 class="bold">Probability: <span>{{log.probability}}</span></h5>
+            <h5 class="bold">Location: <span>{{log.coordinates}}</span></h5>
         </div>
     </div>
 </template>
@@ -100,6 +100,7 @@
         padding: 1%;
         height: 70vh;
         overflow-y:scroll;
+        box-shadow: 0px 5px 10px rgba(0.2, 0.2, 0.2, 0.2);
     }
 
     .log {
@@ -108,5 +109,10 @@
         margin-bottom: 3%;
         flex-direction: column;
         padding: 1%;
+        box-shadow: 0px 5px 10px rgba(0.5, 0.5, 0.5, 0.5);
+    }
+
+    .bold {
+        font-weight: bold
     }
 </style>

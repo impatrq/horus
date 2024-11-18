@@ -12,7 +12,8 @@
     <div class="images-section">
       <h3 v-if='noImages' class="noImages">No Images</h3>
       <div v-for="(image, index) in images" :key="index" class="image-container">
-        <ImagesDisplay :source="image" @zoom-in="zoom"/>
+        <ImagesDisplay :source="image.base64" @zoom-in="zoom"/>
+        <p>{{image.name}}</p>
       </div>
     </div>
   </div>
@@ -65,7 +66,7 @@ const loadImagesFromDB = async () => {
 
   for (const imageRecord of allImages) {
     const base64String = await convertToBase64(imageRecord.file);
-    images.value.push(base64String);
+    images.value.push({base64: base64String, name: imageRecord.name});
   }
   
   if (!images.value || images.value.length === 0){
@@ -81,7 +82,7 @@ const onFileInput = async (event) => {
     if (file.type.startsWith('image/')) {
       await storeImage(file);
       const base64String = await convertToBase64(file);
-      images.value.push(base64String);
+      images.value.push({base64: base64String, name: file.name});
     }
   }
 };
@@ -120,7 +121,8 @@ onMounted(async () => {
 .outer{
   background-color: white;
   opacity: 0.9;
-  height: min(78.5%)
+  z-index: 1;
+  min-height: 80%
 }
 .image-container {
   width: 15%;
@@ -128,13 +130,14 @@ onMounted(async () => {
   align-items: center;
   align-content: center;
   justify-content: center;
+  flex-direction: column
 }
 img {
   width: 100%;
 }
 .images-section {
   display: flex;
-  align-items: space-around;
+  align-items: flex-start;
   justify-content: space-around;
   z-index: 2;
   flex-wrap: wrap
@@ -166,8 +169,8 @@ img {
   width: 100%
 }
 .zoomed-image {
-  max-width: 90%; /* Ensures the image doesn't overflow */
-  max-height: 90%; /* Ensures the image fits within the viewport */
+  max-width: 90%;
+  max-height: 90%; 
   z-index: 1001;
   opacity: 1
 }

@@ -3,24 +3,35 @@
         <div class="superior">
             <div class="center-circle">
                 <div class="circle">
-                    <p>{{robot}}</p>
+                    <p>{{name}}</p>
                 </div>
             </div>
-            <button @click="$emit('deleteRobot', id+1)"><img src="../assets/boton-menos.png"></img></button>
+            <button @click="$emit('deleteRobot', id)"><img src="../assets/boton-menos.png"></img></button>
         </div>
-        <h4>Robot ID: {{id+1}}</h4>
-        <h4>Battery left:</h4>
-        <h4>Time left:</h4>
-        <h4>Last Log:</h4>
-        <h4>Coordinates:</h4>
+        <h4>Robot ID: {{robot.display_id}}</h4>
+        <h4>Battery left: {{robot.battery + '%'}}</h4>
+        <h4>Time left: {{robot.time}}</h4>
+        <h4>Last Log: {{robot.log}}</h4>
+        <h4>Coordinates: {{robot.coordinates}}</h4>
     </div>
 </template>
 
 <script setup>
+import computed from 'vue'
+
 defineProps({
-    robot: String,
-    id: Number
+    robot: {
+        type: Object,
+        required: true
+    }
 })
+
+const name = computed(() => 'R' + (robot.display_id || ''))
+const robot_id = computed(() => (robot.robot_id || ''))
+const battery = computed(() => (robot.battery || ''))
+const time = computed(() => 'R' + (robot.time || ''))
+const log = computed(() => 'R' + (robot.log || ''))
+const coordinates = computed(() => 'R' + (robot.coordinates || ''))
 </script>
 
 <style scoped>

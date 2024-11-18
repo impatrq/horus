@@ -160,7 +160,8 @@ button{
     border-radius: 10%;
     margin: 3%;
     height: 50%;
-    position: relative
+    position: relative;
+    box-shadow: 0px 5px 10px rgba(0, 0.5, 0.5, 0.5);
 }
 
 .superior {

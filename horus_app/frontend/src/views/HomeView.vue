@@ -1,31 +1,31 @@
 <template>
-  <div style="display:flex; min-height:80vh; z-index: 1">
+  <div style="display:flex; height: min(90%); z-index: 1;background-color: #E5E5E5">
     <div ref="mapContainer" style="width: 70vw"></div>
-    <div style="display:flex; flex-direction: column; background-color: #E5E5E5; padding: 2rem">
-      <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter" />
-      
+    <div class="mapSection">
       <h3>Map Settings:  </h3>
-      <section style="display:flex; align-items: center">
+      <section style="display:flex;flex-direction: column">
         <h5>Center Map:</h5>
-        <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter' placeholder="Coordinates"></input>
-        <div class="error" v-if='center_error'><img src="../assets/error.png"></img></div>
+        <div class="flex-direction">
+          <input id='center-coordinates' v-model='centerCoordinates' @change='updateCenter' placeholder="Coordinates"></input>
+          <div class="error" v-if='center_error'><img src="../assets/error.png"></img></div>
+        </div>
       </section>
 
-      <section style="display:flex; align-items: center">
+      <section style="display:flex; flex-direction: column">
         <h5>Add Pheromone Trap: </h5>
         <input id='pheromone-trap' v-model='trapCoordinates' @change='addTrap(1)' placeholder="Coordinates"></input>
         <input id='effect-radius' v-model='trapRadius' @change='addTrap(0)' placeholder="Effect Radius(km)"></input>
         <div class="error" v-if="trap_error"><img src="../assets/error.png"></img></div>
       </section>
 
-      <section style="display:flex; align-items: center">
+      <section style="display:flex; flex-direction: column">
         <h5>Add Route Starting Point: </h5>
         <input id='starting-point' v-model='startCoordinates' @change='addStart(1)' placeholder='Coordinates'></input>
         <input id='robot-id' v-model='startId' @change='addStart(0)' placeholder='Robot ID'></input>
         <div class="error" v-if="start_error"><img src="../assets/error.png"></img></div>
       </section>
 
-      <section id='area' style="display:flex; align-items: center">
+      <section id='area' style="display:flex; flex-direction: column">
         <h5>Add Survey Area: </h5>
         <div class='polygon-text'>
           <input id='polygon1' v-model='polygonCoordinates2' @change='addPolygon(1)' placeholder='Top Left Point'></input>
@@ -36,6 +36,9 @@
         </div>
         <div class="error" v-if="polygon_error"><img src="../assets/error.png"></img></div>
       </section>
+    </div>
+    <div class="filterSection">
+      <DateFilter @updateFilter="updateFilter" @resetFilter="resetFilter" />
     </div>
   </div>
 </template>
@@ -599,21 +602,26 @@ img {
   display: none;
 }
 
-.button{
-  display: inline-block;
-  padding: 1px 6px;
-  margin: 0;
-  font-size: 13px;
-  line-height: normal;
-  text-align: center;
-  cursor: pointer;
-  background-color: buttonface;
-  color: buttontext;
-  border-width: 1px;
-  border-style: outset;
-  border-radius: 3px;
-  border-color: gray;
-  margin-right: 1vw
+.flex-direction{
+  display: flex;
+  flex-direction: column;
 }
 
+.filterSection{
+  padding: 2rem;
+  width: 20%;
+  box-shadow: 0px 5px 10px rgba(0, 0.4, 0.4, 0.4);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  background-color: #DDDDDD
+}
+
+.mapSection{
+  padding: 2rem;
+  width: 20%;
+  box-shadow: 0px 5px 10px rgba(0, 0.4, 0.4, 0.4);
+  margin: 1rem;
+  background-color: #DDDDDD
+}
 </style>

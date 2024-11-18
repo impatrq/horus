@@ -44,8 +44,8 @@ header{
   background-color: white;
   color: #2c3e50;
   align-items: center;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2)
-
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2
 }
 
 .space {
@@ -65,6 +65,7 @@ img {
 nav a {
   font-weight: bold;
   color: #2c3e50;
+  text-decoration: none
 }
 
 nav a:hover {
