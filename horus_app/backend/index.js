@@ -30,80 +30,64 @@ mongoose.connect(process.env.MONGO_URI)
 })
 
 // SERIAL COMMUNICATION
-// La conexión serial no funciona a menos que se encuentre conectada la raspberry
-// try{
-//   const port = new SerialPort({
-//     path: 'COM3',
-//     baudRate: 115200,
-//   })
-// } catch (err) {
-//   console.log("Error initializing serial")
-// }
+const port = new SerialPort({
+  path: 'COM3',
+  baudRate: 115200,
+})
 
+const parser = new ReadlineParser();
+port.pipe(parser);
 
-// const parser = new ReadlineParser();
-// port.pipe(parser);
+port.on('error', (err) => {
+  console.error('Error occurred:', err);
 
+});
 
-// const commQueue = []
+parser.on('data', async (data) => {
+  try {
+    let serial_data = JSON.parse(data);
+    console.log('Data:', serial_data);
+    if (serial_data.type === 'register') {
+      const exists = await robotprofiles.exists({robot_id: serial_data.robot_id})
+      const check = await robotprofiles.exists({robot_id: {$exists:false}, display_id: {$exists:true}})
+      if (!exists){
+        if (!check) {
+          robotprofiles.create({robot_id: serial_data.robot_id})
+        }
+        else {
+          const ref = await robotprofiles.findOne({robot_id: {$exists:false}, display_id: {$exists:true}}, { sort: { display_id: 1 }})
+          await robotprofiles.updateOne({display_id: ref.display_id}, {
+            robot_id: serial_data.robot_id,
+          })
+        }
+      }
+    } else if (serial_data.type === 'log') {
+      const traps = await maptrap.find({}, {coordinates:1, _id:0})
 
-// parser.on('data', async (data) => {
-//   try {
-//     let serial_data = JSON.parse(data);
-//     console.log('Data:', serial_data);
-//     if (serial_data.type === 'confirm') {
-//       const check = robotprofiles.exists({robot_id: serial_data.robot_id})
-//       if (!check){
-//         robotprofiles.create(serial_data)
-//       }
-//     } else if (serial_data.type === 'log') {
-//       const maxDistanceInKm = 1000 * 0.0003048;
-//       const traps = await maptrap.find({}, {coordinates:1, _id:0})
-//       for (const trap in traps) {
-//         const distance = haversineDistance(trap.coordinates, serial_data.coordinates)
-//         if (distance <= maxDistanceInKm) {
-//           serial_data.pheromone_trap = true;
-//           break;
-//         }
-//       }
-//       robotdata.create(serial_data);
-//       robotprofiles.updateOne({robot_id: serial_data.robot_id}, { last_log: serial_data.last_log})
-//     } else if (serial_data.type === 'rd') { // robot data
-//       robotprofiles.updateOne({ robot_id: serial_data.robot_id},{
-//         location: serial_data.location,
-//         battery: serial_data.battery,
-//         time_left: serial_data.time_left,
-//       })
-//     } else if (serial_data === 'SWITCH'){
-//       port.write(commQueue[0])
-//     }
-//   } catch (error) {
-//     console.error("Error parsing JSON:", error);
-//   }
-// })
+      for (const trap of traps) {
+        const maxDistance = trap.radius
+        const distance = haversineDistance(trap.coordinates, req.body[0].location)
+        if (distance <= maxDistance) {
+          serial_data.pheromone_trap = true
+          // Si encuentra una coincidencia, ya es suficiente
+          break
+        }
+      }
+      robotdata.create(serial_data)
+      robotprofiles.updateOne({robot_id: serial_data.robot_id}, { last_log: serial_data.last_log})
 
-// function sendQueue() {
-//   if (commQueue.length === 0) {
-//     turn = false
-//     return
-//   }
-
-//   const message = commQueue.shift()
-
-//   port.write(message, (err) => {
-//     if (err) {
-//       console.error('Error on write: ', err.message);
-//       turn = false; // Reset state if there's an error
-//     } else {
-//       console.log('Message written:', message);
-//       turn = false;
-
-//       if (sendQueue.length > 0) {
-//         sendMessage();
-//       }
-//     }
-//   });
-// }
+    } else if (serial_data.type === 'rd') { // robot data
+      robotprofiles.updateOne({ robot_id: serial_data.robot_id},{
+        location: serial_data.location,
+        battery: serial_data.battery,
+        time_left: serial_data.time_left,
+        log: serial_data.log
+      })
+    }
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
+  }
+})
 
 // HTTP REQUEST ROUTES
 app.use(cors())
@@ -173,6 +157,11 @@ app.get('/api/map/polygons', async (req,res) => {
   res.json(find)
 })
 
+app.get('/api/map/robots', async (req,res) => {
+  let find = await robotprofiles.find({}, {location: 1, robot_id:1})
+  res.json(find)
+})
+
 app.post('/api/map/filter', async(req,res) => {
   console.log(req.body)
   try {
@@ -203,13 +192,17 @@ app.post('/api/map/filter', async(req,res) => {
     console.log(find)
     res.json(find)
   } catch(err) {
-    console.log("Error al fetch de filtro del home")
+    console.log("Error al fetch de filtro del home", err)
   }
 })
 
 function dateFormat(date) {
-  const [year, month, day] = date.split('-');
-  return `${day}-${month}-${year}`;
+  try {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  } catch(err) {
+    return ''
+  }
 }
 
 app.post('/api/store/polygon_coordinates', async (req,res) => {
@@ -219,13 +212,13 @@ app.post('/api/store/polygon_coordinates', async (req,res) => {
     mappolygon.deleteOne({id: req.body.id})
   }
   mappolygon.create(req.body)
-  updateRobotMapData(1)
+  updateRobotMapData(req.body.id)
 })
 
 app.post('/api/store/trap_coordinates', async (req,res) => {
   console.log(req.body)
   maptrap.create(req.body)
-  updateRobotMapData(1)
+  updateRobotMapData(req.body.id)
 })
 
 app.post('/api/store/starting_point', async (req,res) => {
@@ -235,7 +228,7 @@ app.post('/api/store/starting_point', async (req,res) => {
     mapstart.deleteOne({id: req.body.id})
   }
   mapstart.create(req.body)
-  updateRobotMapData(1)
+  updateRobotMapData(req.body.id)
 })
 
 app.post('/api/store/zoom_coordinates', async (req,res) => {
@@ -273,73 +266,114 @@ app.delete('/api/delete/polygon_coordinates/:id', async(req,res) => {
 })
 
 // Robots App Route
-app.post('/api/robot/connect', async (req,res) => {
-  const connectJSON = {
-    type: 'connect',
-    robot_id: req.body.robot_id
+app.post('/api/robot/add', async (req,res) => {
+  const exists = await robotprofiles.exists({display_id: req.body.display_id})
+  const check = await robotprofiles.exists({robot_id: {$exists:true}, display_id: {$exists:false}})
+  if (!exists){
+    if (!check) {
+      robotprofiles.create(req.body)
+    }
+    else {
+      const ref = await robotprofiles.findOne({robot_id: {$exists:true}, display_id: {$exists:false}})
+      await robotprofiles.updateOne({robot_id: ref.robot_id}, {display_id: req.body.display_id})
+    }
   }
-  const response = res.json('ok')
-  // commQueue.push(connectJSON)
 })
 
 app.get('/api/robot/load', async(req,res) => {
+  const check = await robotprofiles.find({display_id:{$exists: false}})
+  let ref = await robotprofiles.findOne({display_id: {$exists: true}}, { sort : {display_id: -1 } })
+  if (check != null){
+    if (ref == null){
+      ref = {display_id: 0}
+    }
+    for (const item of check){
+      const update = await robotprofiles.updateOne({robot_id: item.robot_id}, {display_id: ref.display_id + 1})
+    }
+  }
   const robots = await robotprofiles.find()
+  console.log(robots)
+  res.json(robots)
 })
 
 async function updateRobotMapData (id){
-  const area = await mappolygon.find({ robot_id: id}, {polygon_coordinates:1, _id:0})
+  const area = await mappolygon.find({ id: id}, {polygon_coordinates:1})
+  const start = await mapstart.find({ id: id}, {starting_point:1})
   console.log(area)
   const robotMapData = {
     type: 'rd',
-    area: area.polygon_coordinates
+    area: area.polygon_coordinates,
+    start: start.starting_point
   }
-  // commQueue.push(robotMapData)
+  const message = JSON.stringify(robotMapData);
+  port.write(message)
 }
 
-app.get('/api/robot/remove', async (req, res) => {
-  const getinfoJSON = {
-    type: 'getinfo',
+app.post('/api/robot/delete', async (req, res) => {
+  const robot = await robotprofiles.findOneAndDelete({display_id: req.body.display_id})
+})
+
+app.post('/api/robot/check', async (req, res) => {
+  const robot = await robotprofiles.exists({display_id:req.body.display_id, robot_id: {$exists: true}})
+  if (robot) {
+    res.json({found: true})
+  } else {
+    res.json({found: false})
   }
-  // commQueue.push()
+  console.log(robot)
 })
 
 app.post('/api/offline', async (req, res) => {
-  console.log(req.body)
+  robotprofiles.create(req.body[0])
+  console.log(req.body[0])
   // El primer elemento del array es un objecto con datos del robot
-  const check = robotprofiles.exists({robot_id: req.body[0].robot_id})
-  if (!check){
-    robotprofiles.create(req.body[0])
+  // Checkeo por un lado si existe el robot con ese id ya, y por otro si existe ya un documento de display adjuntarlo
+  // a ese o hay que crear uno de robot id vacio
+  const exists = await robotprofiles.exists({robot_id: req.body[0].robot_id})
+  const check = await robotprofiles.exists({robot_id: {$exists:false}, display_id: {$exists:true}})
+  if (!exists){
+    if (!check) {
+      robotprofiles.create(req.body[0])
+    }
+    else {
+      const ref = await robotprofiles.findOne({robot_id: {$exists:false}, display_id: {$exists:true}}, { sort: { display_id: 1 }})
+      await robotprofiles.updateOne({display_id: ref.display_id}, {
+        robot_id: req.body[0].robot_id,
+        location: req.body[0].location,
+        battery: req.body[0].battery,
+        time_left: req.body[0].time_left,
+        last_log: req.body[0].last_log
+      })
+    }
   }
-  robotprofiles.updateOne({ robot_id: req.body[0].robot_id},{
-    location: req.body[0].location,
-    battery: req.body[0].battery,
-    time_left: req.body[0].time_left,
-    last_log: req.body[0].last_log
-  })
 
+  let i = 1
   // El segundo elemento del array es un array json con logs
-  for (const item of req.body.lenght[1]){
-    const traps = await maptrap.find({}, {coordinates:1, _id:0})
+  for (const item in req.body[i]){
+    const traps = await maptrap.find({}, {trap_coordinates:1, radius: 1})
+    console.log(traps)
     for (const trap of traps) {
       const maxDistance = trap.radius
-      const distance = haversineDistance(trap.coordinates, req.body[0].location)
+      console.log(trap.trap_coordinates, req.body[0].location)
+      const distance = haversineDistance(trap.trap_coordinates, req.body[0].location)
       if (distance <= maxDistance) {
-        serial_data.pheromone_trap = true
+        item.pheromone_trap = true
         // Si encuentra una coincidencia, ya es suficiente
         break
       }
     }
-    robotdata.create(item);
+    robotdata.create(req.body[i]);
   }
 
   // Ahora tengo que devolver datos para poner en el pendrive
-  const find_area = await mappolygon({id: req.body[0].robot_id})
-  const find_point = await mapstart({id: req.body[0].robot_id})
+  const find_area = await mappolygon.findOne({id: req.body[0].robot_id})
+  const find_point = await mapstart.findOne({id: req.body[0].robot_id})
   const answer = {
-    polygon_coordinates: find_area,
-    starting_point: find_point
+    polygon_coordinates: find_area.polygon_coordinates,
+    starting_point: find_point.starting_point
   }
   res.json(answer)
+  console.log(answer)
 })
 
 // Funcion para calcular distancia de coordenadas en km (para la distancia robot-trampa)

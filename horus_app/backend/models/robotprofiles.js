@@ -6,8 +6,12 @@ const dataSchema = new Schema({
     type: Number,
     required: false
   },
-  location: {
+  display_id: {
     type: Number,
+    required: false
+  },
+  location: {
+    type: [Number],
     required: false
   },
   battery: {
@@ -15,11 +19,11 @@ const dataSchema = new Schema({
     required: false
   },
   time_left: {
-    type: Number,
+    type: String,
     required: false
   },
   last_Log: {
-    type: Number,
+    type: String,
     required: false
   }
 })

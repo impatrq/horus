@@ -1,55 +1,112 @@
 <template>
   <div class="robotsView">
-    <RobotDashboard v-for="(robot, index) in robotList" :key="index" :robot="robot" :id="index" @deleteRobot="deleteRobot"/>
+    <div v-for="(robot, index) in robotList" class="dashboard">
+      <div class="superior">
+        <div class="center-circle">
+          <div class="circle">
+            <p>{{'R' + robot.display_id}}</p>
+          </div>
+        </div>
+        <button @click="deleteRobot(robot.display_id)"><img src="../assets/boton-menos.png"></img></button>
+      </div>
+      <h5>Robot ID: {{robot.robot_id}}<span v-if="!robot.robot_id" class="red">unavailable</span></h5>
+      <h5>Battery left: <span v-if="robot.battery">{{robot.battery}}</span><span v-if="!robot.battery" class="red">unavailable</span><span>%</span></h5>
+      <h5>Time left: {{robot.time}}<span v-if="!robot.time" class="red">unavailable</span></h5>
+      <h5>Last Log: {{robot.log}}<span v-if="!robot.log" class="red">unavailable</span></h5>
+      <h5>Coordinates:<span v-if="robot.coordinates && robot.coordinates.length >= 2">{{robot.coordinates[0] + ',' + robot.coordinates[1]}}</span><span v-if="!robot.coordinates" class="red">unavailable</span></h5>
+    </div>
     <AddRobot @addRobot="addNewRobot"/>
   </div>
 </template> 
 
 <script setup>
-import RobotDashboard from '@/components/RobotDashboard.vue'
 import AddRobot from '@/components/AddRobot.vue'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const robotList = ref([])
-const robotNum = ref(0)
 
 async function addNewRobot () {
-  console.log('hi', robotList.value)
-  robotNum.value = robotNum.value + 1
-  const newRobot = 'Robot ' + robotNum.value
-  robotList.value.push(newRobot)
+  let newNumber = 0
+  let maxNumber = 0
+  try {
+    maxNumber = robotList.value[0].display_id;
+
+    for (let i = 1; i < robotList.value.length; i++) {
+      if (robotList.value[i].display_id > maxNumber) {
+        maxNumber = robotList.value[i].display_id;
+      }
+    }
+  } catch(err) {
+    console.log('addNewRobot', err)
+  }
+  newNumber = maxNumber + 1 
+
   const requestOptions = {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    robot_id: robotNum.value
-   })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      display_id: newNumber
+    })
   };
   try {
-    const connect = await fetch('http://localhost:3000/api/robot/connect', requestOptions)
-    console.log(connect.json())
+    console.log(robotList.value)
+    const connect = await fetch('http://localhost:3000/api/robot/add', requestOptions)
+    robotList.value.push({
+      display_id: newNumber
+    })
   } catch (err) {
-    alert('Robot Connection Error')
     console.log('Robot connection error', err)
   }
 }
 
-function deleteRobot (id){
-  robotList.value.filter(robot => id != id)
-  robotList.value.pop()
-  robotNum.value('')
+async function deleteRobot (id){
+  robotList.value = robotList.value.filter(robot => robot.display_id !== id)
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      display_id: id
+    })
+  }
+  const request = await fetch('http://localhost:3000/api/robot/delete', requestOptions)
 }
 
-// function loadRobots (){
-//   try {
-//     const load = await fetch('http://localhost:3000/api/robot/connect')
-//     robotList.value = load.json()
-//   }
-// }
 
-// onMounted(async () => {
+async function loadRobots (){
+  try {
+    const load = await fetch('http://localhost:3000/api/robot/load')
+    const res = await load.json()
+    console.log('loadrobots', res)
+    for(const item of res) {
+      robotList.value.push(item)
+      console.log(item)
+    }
+  }
+  catch {
+    alert('Server Connection Error')
+  }
+}
 
-// })
+function checkStatus(id){
+  const checks = setInterval(async () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        display_id: id
+      })
+    }
+    const check = await fetch('http://localhost:3000/api/robot/check', requestOptions)
+    const res = await check.json()
+    if (res.found == true) {
+      clearInterval(checks)
+    }
+  }, 500);
+}
+
+onMounted(async () => {
+  await loadRobots()
+})
 </script>
 
 <style scoped>
@@ -57,5 +114,77 @@ function deleteRobot (id){
   display:flex;
   height: 70%;
   flex-wrap: wrap;
+}
+
+.circle {
+    border-radius: 50%;
+    background-color: black;
+    width: 5rem;
+    height: 5rem;
+    align-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+    justify-content: center;
+    align-content: center ;
+    padding-top: 0.5;   
+}
+
+.center-circle{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+button{
+    position: absolute; 
+    right: 5%;
+    top: 5%;
+    width: 15%;
+    height: 15%;
+    border: none;
+    background: none
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    width: 15%;
+    padding: 100%;
+    padding: 2%;
+    border-radius: 10%;
+    margin: 3%;
+    height: 50%;
+    position: relative
+}
+
+.superior {
+    padding: 5%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 50%
+}
+
+p, h5{
+  margin: 0px
+}
+
+p {
+    padding-top: 2rem
+}
+
+img {
+    width: 100%
+}
+
+.red {
+  color: red
 }
 </style>
