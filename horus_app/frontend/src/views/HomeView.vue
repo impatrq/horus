@@ -539,7 +539,7 @@ onMounted(async () => {
   console.log(zoom.value)
   await getZoom();
   console.log(zoom.value)
-  map.value = L.map(mapContainer.value, {doubleClickZoom: false, scrollWheelZoom: false}).setView(zoom.value, 13);
+  map.value = L.map(mapContainer.value, {doubleClickZoom: false, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false}).setView(zoom.value, 13);
   const baseLayer = L.tileLayer.offline("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution:
