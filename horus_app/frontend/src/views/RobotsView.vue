@@ -9,10 +9,10 @@
         </div>
         <button @click="deleteRobot(robot.display_id)"><img src="../assets/boton-menos.png"></img></button>
       </div>
-      <h5>Robot ID: {{robot.robot_id}}<span v-if="!robot.robot_id" class="red">unavailable</span></h5>
+      <h5>Robot ID: <span v-if="robot.robot_id">{{robot.robot_id}}</span><span v-if="!robot.robot_id" class="red">unavailable</span></h5>
       <h5>Battery left: <span v-if="robot.battery">{{robot.battery}}</span><span v-if="!robot.battery" class="red">unavailable</span><span>%</span></h5>
-      <h5>Time left: {{robot.time}}<span v-if="!robot.time" class="red">unavailable</span></h5>
-      <h5>Last Log: {{robot.log}}<span v-if="!robot.log" class="red">unavailable</span></h5>
+      <h5>Time left: <span v-if="robot.time">{{robot.time}}</span><span v-if="!robot.time" class="red">unavailable</span></h5>
+      <h5>Last Log: <span v-if="robot.log">{{robot.log}}</span><span v-if="!robot.log" class="red">unavailable</span></h5>
       <h5>Coordinates:<span v-if="robot.coordinates && robot.coordinates.length >= 2">{{robot.coordinates[0] + ',' + robot.coordinates[1]}}</span><span v-if="!robot.coordinates" class="red">unavailable</span></h5>
     </div>
     <AddRobot @addRobot="addNewRobot"/>
@@ -174,7 +174,8 @@ button{
 }
 
 p, h5{
-  margin: 0px
+  margin: 0px;
+  margin-top: 4%
 }
 
 p {
@@ -187,5 +188,9 @@ img {
 
 .red {
   color: red
+}
+
+span {
+  font-weight: 100
 }
 </style>

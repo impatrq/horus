@@ -1,71 +1,55 @@
 <div align="center">
     
-# [HORUS](https://linktr.ee/agro_horus)
+# [HORUS APP](https://linktr.ee/agro_horus)
 
-<img src="/horus_documentacion/horus_logo/LoGO.png" height="450" width="450" />
-
-&nbsp;
-
-| Página web | Email | Instagram | YouTube |
-|------------|-------|-----------|---------|
-|[agro_horus.app](https://horus-pagina-web.vercel.app)|agroohoruss@gmail.com|[@agro_horus](https://www.instagram.com/agro_horus/)|[agro_horus.video](https://youtu.be/Rt4uS1dhISc?si=q_koguGqGLUvtIlc)|
+<img src="/horus_app/frontend/src/assets/LoGO.png" height="450" width="450" />
 
 &nbsp;
 
 </div>
 
-## ¿Qué es Horus?
-Horus es un robot de reconocimiento para el campo que permite la detección de plagas de manera remota.
+## ¿Qué es HorusAPP?
+HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario pueda interactua con él y el sistema
 
-## ¿De dónde surgió la idea?
+<img src="/horus_app/frontend/src/assets/Home.png" height="450" width="450" />
 
-Comenzamos primero con la idea de ayudar al campo, luego de investigación llegamos a las problemáticas que presentaban las plagas artrópodos en las plantaciones, así llegamos a la conclusión de automatizar el monitoreo de plantaciones con un robot autónomo.
+## Funcionalidades
+* Mapa Interactivo
+    * Elegir la ubicación del campo a registrar, desplazarse sobre el mapa
+    * Visualizar la ubicación de uno o más robots Horus mediante un mapa
+    * Insertar y visualizar ubicaciones de trampas de feromonas colocadas por los responsables del campo
+    * Insertar y visualizar ubicaciones de áreas de detección que el usuario quiere que cada robot siga
+    * Visualizar los reconocimientos de plaga detectados por todos los robots, y filtrar por ellos
+    * Todos los marcadores tienen información sobre los mismos al presionarlos
+    * Aquellos que se pueden insertar, pueden ser eliminados del sistema con doble click
+    * Sistema de guardado offline para su uso en zonas sin conexión a internet
+* Base de Datos que permite:
+    * Guardar y exportar todos los reconocimientos hechos por todos los robots
+    * Visualizar y mantener registro de cada robot, incluida su ubicación, batería y ID
+    * Importar imágenes del sistema de almacenamiento externo de cada robot y hacerle zoom
+    * Exportar imágenes guardadas en la base de datos como archivo comprimido
+    * Filtrar y ordenar los reconocimientos hechos por los diferentes parámetros detectados:
+        * Dia
+        * Hora
+        * Coordenadas
+        * Tipo de Plaga
+        * ID de Robot
+        * ID de Imagen
+        * Trampa de feromona
+* Modos offline y online para comunicación de datos con el o los robots:
+    * Online: cuando el usuario registre un robot, el servidor tratará de usar el módulo comunicador para transmitir por antena hasta conectar con un robot.
+    * Offline: el usuario deberá tomar el sistema de almacenamiento externo al robot e importar los archivos de reconocimiento manualmente a la aplicación.
 
-## ¿Cómo funciona?
-El robot se translada de manera autónoma por el campo y analiza los cultivos a su alrededor con una cámara. La IA del robot analiza el video que percibe con la cámara y determina si se encuentra con una plaga. Esta información es luego transmitida por radiofrecuencia a un módulo de comunicación que permite conectarlo a una computadora con nuestra aplicación. Esto incluye base de datos para guardar las detecciones, interfaz gráfica e interacción con el robot para el usuario
+<img src="/horus_app/frontend/src/assets/robots.png" height="450" width="450" />
 
-## ¿Quiénes somos?
+## Requerimientos
 
-Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
+<img src="/horus_app/frontend/src/assets/Data.png" height="450" width="450" />
 
-### Cabrera, Martín
+## Instrucciones de instalación
+Ingrese a la página de github de Horus y descargue el último lanzamiento. 
 
-* 📧 martincabreracirco@gmail.com
+<img src="/horus_app/frontend/src/assets/gallery.png" height="450" width="450" />
 
-* LinkedIn: https://www.linkedin.com/in/mart%C3%ADn-alejandro-cabrera-6014b727b/
 
-### Contreras, Abril Victoria
 
-* 📷 Instagram: @_ _viicontreras__
-
-* 📧 abrilchiscontreras@gmail.com
-
-* LinkedIn: https://www.linkedin.com/in/abril-contreras-039998303/
-
-### Díaz Steinbrecher, Lara
-
-* 📧 diazsteinbrecher@gmail.com
-
-* LinkedIn: https://www.linkedin.com/in/lara-diaz-steinbrecher-97263b303/
-
-### Ferrante, Santino
-
-* 📧 ferrantesantino14@gmail.com
-  
-* LinkedIn: https://www.linkedin.com/in/santino-marco-ferrante-a57bb5180/
-
-### Kearney, Mateo
-
-* LinkedIn: https://www.linkedin.com/in/mateo-kearney-996637303/
-
-### Torres, Juan Ignacio
-
-* 📧 juanignaciotorr@gmail.com
-
-* LinkedIn: https://www.linkedin.com/in/juan-ignacio-torres-34a232303/
-
-## Reconocimientos
-
-* Medalla de Oro en PROTOTIPOS - EJE LIBRE de las ONIET 2024
-
-* Medalla de Oro en FEED DE INSTAGRAM de las ONIET 2024
