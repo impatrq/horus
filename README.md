@@ -45,7 +45,7 @@ HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario 
 ## Requerimientos y dependencias
 * 2GB de almacenamiento en la computadora (puede escalar según el uso de la base de datos)
 * 1GB de memoria
-* Windows 11+ o Linux
+* Windows 11+, Linux o Mac
 * MongoDB Compass v1.44.5
 * NodeJS v20.11.1
 * Dependencias: 
@@ -67,7 +67,6 @@ HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario 
     * @vue/cli-service v5.0.0
     * concurrently v8.2.2
     * electron v20.2.0
-    * electron-builder v23.3.3
     * wait-on v6.0.1 
 
 
