@@ -25,11 +25,12 @@
 
 <style scoped>
 nav {
+  display: flex;
   width: 50%;
   height: 50px;
   text-align: left;
-  padding-top: 1em;
-  justify-content: space-evenly;
+  justify-content: space-around;
+  align-items: center
 }
 
 span{
@@ -38,10 +39,13 @@ span{
 
 header{
   display: flex;
-  width: 100%;
-  height: 50px;
+  width: 100vw;
+  height: 7vh;
   background-color: white;
   color: #2c3e50;
+  align-items: center;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+  z-index: 2
 }
 
 .space {
@@ -61,6 +65,11 @@ img {
 nav a {
   font-weight: bold;
   color: #2c3e50;
+  text-decoration: none
+}
+
+nav a:hover {
+  color: #42b983
 }
 
 nav a.router-link-exact-active {
@@ -69,12 +78,12 @@ nav a.router-link-exact-active {
 
 .image {
   width: 4rem;
-  padding-left: 0.4rem;
+  padding-left: 0.8rem;
   padding-right: 0.4rem;
 }
 
 .z-01 {
-  z-index: 2;
+  z-index: 801;
   position: fixed;
   right: 1vh;
 }

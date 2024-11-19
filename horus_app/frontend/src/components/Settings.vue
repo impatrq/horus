@@ -1,27 +1,91 @@
 <template>
     <div>
-        <h3>Ajustes</h3>
-        <h4>Exportar</h4>
-        <h5><a download="SD Card.txt" href="./assets/Ayuda/SD Card.txt">SD Card</a></h5>
-        <h5><a download="Detection Logs.txt" href="./assets/Ayuda/Detection-Logs.txt">Detection Logs</a></h5>
-        <h4>Ayuda</h4>
-        <h5><a download="Manual de Usuario.txt" href="./assets/Ayuda/Manual-de-Usuario-Prop.txt">Manual de Usuario</a></h5>
-        <h5><a download="Contacto.txt" href="./assets/Ayuda/ContactoProp.txt">Contacto</a></h5>
+        <h4><a href="../assets/Ayuda/ManualdeUsuario.pdf" target="_blank">Help</a></h4>
+        <input type="file" @change="importLogs" id="fileInput" style="display:none"></input>
+        <label for="fileInput">Import Logs</label>
+        <h4><a @click="exportLogs">Export Logs</a></h4>
+        <h4><a href="https://horus-pagina-web.vercel.app/" target="_blank">Contacts</a></h4>
     </div>
 </template>
 
+<script setup>
+import JSZip from 'jszip'
+
+const exportLogs = async() => {
+    try {
+        const res = await fetch("http://localhost:3000/api/allLogs");
+        const logs = await res.json();
+        
+        const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'logs.json';
+        link.click();
+    } catch (err) {
+        alert('Server Connection Error')
+    }
+}
+
+const importLogs = async(event) => {
+    const file = event.target.files[0];
+    console.log('Imported')
+
+    if (file && file.type === "application/json") {
+        try {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: file
+            }
+            const response = await fetch(`http://localhost:3000/api/offline`, requestOptions)
+
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = 'rxsample.json';
+            link.click();
+        } catch (err) {
+            alert("Server Connection Error")
+        }
+    }
+}
+</script>
+
 <style scoped>
-    h3,h4,h5{
-        text-align: center;
+    label {
+        font-size: 1rem;
+        font-weight: bold;
+        margin: 0.5rem 0;
+        line-height: 1rem
+    }
+    a{
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    a:hover, label:hover {
+        color: #42b983;
+        text-decoration: underline;
+        cursor: pointer
     }
 
     div{
-        width: 25%;
+        width: 15%;
         height: auto;
-        background-color: #ffffff;
-        opacity: 95%;
+        background-image: linear-gradient(to bottom, #ffffff,#f0f0f0);
+        opacity: 100%;
         padding: 1rem;
         float: right;
         position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 5px;
+        border: 2px solid #EEEEEE; 
+        box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2)
+    }
+
+    a, label{
+        text-decoration: none
     }
 </style>
