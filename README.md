@@ -42,12 +42,39 @@ HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario 
 
 <img src="/horus_app/frontend/src/assets/robots.png" height="450" width="450" />
 
-## Requerimientos
+## Requerimientos y dependencias
+* 2GB de almacenamiento en la computadora (puede escalar según el uso de la base de datos)
+* 1GB de memoria
+* Windows 11+ o Linux
+* MongoDB Compass v1.44.5
+* NodeJS v20.11.1
+* Dependencias: 
+    * leaflet v1.9.4
+    * body-parser v1.20.2
+    * cors v2.8.5
+    * express v4.19.2
+    * mongoose v8.4.0
+    * path v0.12.7
+    * serialport v12.0.0
+    * dotenv v16.4.5
+    * @serialport/parser-readline v12.0.0
+    * idb v8.0.0
+    * jszip v3.10.1
+    * vue v3.2.13
+    * vue-router v4.0.3
+    * @vue/cli-plugin-babel v5.0.0
+    * @vue/cli-plugin-router v5.0.0
+    * @vue/cli-service v5.0.0
+    * concurrently v8.2.2
+    * electron v20.2.0
+    * electron-builder v23.3.3
+    * wait-on v6.0.1 
+
 
 <img src="/horus_app/frontend/src/assets/Data.png" height="450" width="450" />
 
 ## Instrucciones de instalación
-Ingrese a la página de github de Horus y descargue el último lanzamiento. 
+Ingrese a la página de github de [Horus](https://github.com/impatrq/horus) y descargue el último lanzamiento. Dentro de la carpeta de horus_app, si su sistema operativo es windows, ejecute (doble click) el archivo Horus.bat; si se encuentra en Linux o Mac, ejecute el archivo Horus.sh. Para su comodidad, cree un acceso directo del archivo ejecutable (ya sea .bat o .sh) para poder acceder más fácilmente al archivo desde su escritorio.
 
 <img src="/horus_app/frontend/src/assets/gallery.png" height="450" width="450" />
 
