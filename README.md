@@ -11,7 +11,7 @@
 ## ¿Qué es HorusAPP?
 HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario pueda interactua con él y el sistema
 
-<img src="/horus_app/frontend/src/assets/Home.png" height="450" width="450" />
+<img src="/horus_app/frontend/src/assets/Home.png" height="450" width="900" />
 
 ## Funcionalidades
 * Mapa Interactivo
@@ -40,7 +40,7 @@ HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario 
     * Online: cuando el usuario registre un robot, el servidor tratará de usar el módulo comunicador para transmitir por antena hasta conectar con un robot.
     * Offline: el usuario deberá tomar el sistema de almacenamiento externo al robot e importar los archivos de reconocimiento manualmente a la aplicación.
 
-<img src="/horus_app/frontend/src/assets/robots.png" height="450" width="450" />
+<img src="/horus_app/frontend/src/assets/robots.png" height="450" width="900" />
 
 ## Requerimientos y dependencias
 * 2GB de almacenamiento en la computadora (puede escalar según el uso de la base de datos)
@@ -71,12 +71,12 @@ HorusAPP es la aplicación que se usa en conjunto con Horus para que el usuario 
     * wait-on v6.0.1 
 
 
-<img src="/horus_app/frontend/src/assets/Data.png" height="450" width="450" />
+<img src="/horus_app/frontend/src/assets/Data.png" height="450" width="900" />
 
 ## Instrucciones de instalación
 Ingrese a la página de github de [Horus](https://github.com/impatrq/horus) y descargue el último lanzamiento. Dentro de la carpeta de horus_app, si su sistema operativo es windows, ejecute (doble click) el archivo Horus.bat; si se encuentra en Linux o Mac, ejecute el archivo Horus.sh. Para su comodidad, cree un acceso directo del archivo ejecutable (ya sea .bat o .sh) para poder acceder más fácilmente al archivo desde su escritorio.
 
-<img src="/horus_app/frontend/src/assets/gallery.png" height="450" width="450" />
+<img src="/horus_app/frontend/src/assets/gallery.png" height="450" width="900" />
 
 
 
