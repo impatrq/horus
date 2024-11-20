@@ -17,6 +17,10 @@
     height: 50%
 }
 
+.dashboard:hover{
+    background-color: #eeeeee
+}
+
 button {
     width: 25%;
     height: 25%;

@@ -50,10 +50,10 @@ async function addNewRobot () {
   };
   try {
     console.log(robotList.value)
-    const connect = await fetch('http://localhost:3000/api/robot/add', requestOptions)
     robotList.value.push({
       display_id: newNumber
     })
+    const connect = await fetch('http://localhost:3000/api/robot/add', requestOptions)
   } catch (err) {
     console.log('Robot connection error', err)
   }

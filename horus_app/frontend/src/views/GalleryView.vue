@@ -196,4 +196,8 @@ img {
   border-color: gray;
   margin-right: 1vw
 }
+
+.button:hover{
+  background-color: #dddddd
+}
 </style>
