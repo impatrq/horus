@@ -73,6 +73,11 @@ parser.on('data', async (data) => {
           break
         }
       }
+
+      const now = new Date()
+      serial_data.time = `${now.getHours()}:${now.getMinutes()}`
+      serial_data.date = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
       robotdata.create(serial_data)
       robotprofiles.updateOne({robot_id: serial_data.robot_id}, { last_log: serial_data.last_log})
 
@@ -362,6 +367,12 @@ app.post('/api/offline', async (req, res) => {
         break
       }
     }
+
+    // Supuestamente como no tiene internet, el robot no puede acceder a fecha y hora
+    const now = new Date()
+    item.time = `${now.getHours()}:${now.getMinutes()}`
+    item.date = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+
     robotdata.create(req.body[i]);
   }
 
