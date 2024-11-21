@@ -149,7 +149,7 @@ img {
 }
 .opacity-zoom {
   background-color: black;
-  opacity: 0.5;
+  opacity: 0.75;
   position: fixed;
   width: 100%;
   height: 100%;
@@ -169,10 +169,9 @@ img {
   width: 100%
 }
 .zoomed-image {
-  max-width: 90%;
-  max-height: 90%; 
+  width: 50%; 
   z-index: 1001;
-  opacity: 1
+  opacity: 1;
 }
 .noImages{
   align-self: center
