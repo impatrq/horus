@@ -24,6 +24,6 @@
         background-color: white
     }
     button:hover {
-        background-color: #CCCCCC
+        background-color: #eeeeee
     }
 </style>
