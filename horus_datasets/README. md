@@ -1,0 +1,6 @@
+Horus Datasets
+------------
+
+Carpeta donde se encuentran guardados los datatasets usados para el entrenamiento de los modelos de la ia.
+
+Los datasets contienen las imagenes de orugas y los archivos de etiquetado de las imagenes correspondientes.
