@@ -5,6 +5,8 @@ import os
 import json
 import cv2
 
+import serial, string, pynmea2
+
 ## Seteo configuracion del Lora ##
 #LoRa = SX127x()
 #LoRa.begin()
@@ -41,6 +43,10 @@ class Robot():
         logs = []
 
         ubicacion = [51.496756, -0.138503] #ACA USAR FUNCION DEL GPS
+        
+        ubigps = self.coordenadas()
+        
+        print (ubigps)
         
         # Verificacion de datos mediante pendrive 
         dictionary =  {
@@ -175,11 +181,41 @@ class Robot():
     def codificador(self):
         pass
     
+    def coordenadas(self):
+        
+        lat = 0
+        lng = 0
+        
+        
+        try:
+            while lat == 0:
+                port = "/dev/ttyAMA0"
+                ser = serial.Serial(port, baudrate = 9600, timeout = 0.5)
+                dataout = pynmea2.NMEAStreamReader()
+                newdata = ser.readline()
+            
+                n_data = newdata.decode('latin-1')
+                if n_data[0:6] == "$GPRMC":
+                    newmsg= pynmea2.parse(n_data)
+                    lat = newmsg.latitude
+                    lng = newmsg.longitude
+                    
+                    
+                    gps = "latitude = " + str(lat) + "\n longitude = " +str(lng)
+                
+                    #en una misma posicion los primeros 4 numeros luego de la coma no cambian
+                
+                    print(gps)
+                    
+        except:
+            lat = 0
+            lng = 0
+       
+        return (lat, lng)
+    
     def decodificador(self):
         pass
         
-    def coordenadas(self):
-        pass
     
     def bateria(self, bateria):
         self.bateria = bateria
