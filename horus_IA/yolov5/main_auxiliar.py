@@ -109,16 +109,43 @@ class Robot():
     
                 nombre = "fotosoja" + str(extr) #toma el momento de la captura en tiempo
         
-                cv2.imwrite("/home/horus/Desktop/yolov5/data/images/ "  + nombre +  ".jpg" , capturador)
+                cv2.imwrite("/home/horus/Desktop/yolov5/plague_images/ "  + nombre +  ".jpg" , capturador)
+                cv2.imwrite("/home/horus/Desktop/yolov5/data/images/ "  + "fotosoja" +  ".jpg" , capturador)
                 # guarda la captura en la carpeta asignada, la carpeta se cambia segun la computadora y donde quieras ubicar el archivo
                 # NOTA: a futuro usar tkinter para abrir una pantalla que le pida al usuario donde quiere poner las imagenes
                 # A la direccion se le agrega una \ y un espacio, sino no funciona.
     
                 extr = extr + 1
                 print (nombre)
-                time.sleep(2)
+                time.sleep(.5)
                 
+                os.system ("python detect.py --weights orugasmodelo.pt --img 640 --conf 0.25 --source data/images")
+                time.sleep(1)
                 
+                with open('orugas.json', 'r') as openfile:
+                    orugasdict = json.load(openfile)
+            
+                num_det = orugasdict['num_det']
+                probability = orugasdict['confidence']
+
+                deteccion =  {
+                    "robot_id": 1,
+                    "plague_type": "oruga",
+                    "plague_detection": num_det,
+                    "pheromone_trap": False,
+                    "image_id": nombre,
+                    "probability": probability,
+                    "date": "31-01-2024",
+                    "time": "16:42",
+                    "coordinates": [51.505, -0.09]
+                }
+            
+                logs.append(deteccion)
+ 
+                # Writing to sample.json
+                with open("txsample.json", "w") as outfile:
+                    json.dump(logs, outfile)
+                #outfile.write(logs)
 
                 i = i + 1
     
@@ -130,32 +157,10 @@ class Robot():
             # Se cierra la camara con la letra Q
 
             #os.system ("wget -P /home/horus/Desktop/New/yolov5/data/images http://192.168.221.56:8080/photo.jpg")
-            os.system ("python detect.py --weights orugasmodelo.pt --img 640 --conf 0.25 --source data/images")
+            #os.system ("python detect.py --weights orugasmodelo.pt --img 640 --conf 0.25 --source data/images")
 
            
-            with open('orugas.json', 'r') as openfile:
-                orugasdict = json.load(openfile)
             
-            num_det = orugasdict['num_det']
-
-            deteccion =  {
-                "robot_id": 1,
-                "plague_type": "oruga",
-                "plague_detection": num_det,
-                "pheromone_trap": False,
-                "image_id": 12311,
-                "probability": 100,
-                "date": "31-01-2024",
-                "time": "16:42",
-                "coordinates": [51.505, -0.09]
-                }
-            
-            logs.append(deteccion)
- 
-            # Writing to sample.json
-            with open("txsample.json", "w") as outfile:
-                json.dump(logs, outfile)
-                #outfile.write(logs)
             
         
             recorrido = recorrido + 1
