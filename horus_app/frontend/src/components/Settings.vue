@@ -9,11 +9,6 @@
         <h5><a download="Contacto.txt" href="./assets/Ayuda/ContactoProp.txt">Contacto</a></h5>
     </div>
 </template>
-    
-<script>   
-    export default {
-    }
-</script>
 
 <style scoped>
     h3,h4,h5{
@@ -23,8 +18,10 @@
     div{
         width: 25%;
         height: auto;
-        background-color: gray;
+        background-color: #ffffff;
+        opacity: 95%;
         padding: 1rem;
         float: right;
+        position: absolute;
     }
 </style>

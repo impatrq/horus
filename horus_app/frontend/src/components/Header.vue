@@ -1,20 +1,26 @@
 <template>
-    <header>
-    <div class="space"><img :src="require('../assets/Ojo de Horus.png')" /></div>
+  <header>
+    <div class="image"><img :src="require('../assets/Ojo de Horus.png')" /></div>
     <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/robots">Robots</router-link> |
-      <router-link to="/data">Data</router-link> |
-      <router-link to="/gallery">Gallery</router-link>
+      <RouterLink to="/">Home</RouterLink> |
+      <RouterLink to="/robots">Robots</RouterLink> |
+      <RouterLink to="/data">Data</RouterLink> |
+      <RouterLink to="/gallery">Gallery</RouterLink>
     </nav>
     <span></span>
-    <button class="space"><img :src="require('../assets/settings-icon.png')" alt="settings"></button> 
+    <SettingsIcon @OnClick="showSettings= !showSettings"/>
   </header>
+  <Settings class="z-01" v-if="showSettings" />
 </template>
     
-<script>   
-  export default {
-  }
+<script setup>   
+  import Settings from "./Settings.vue"
+  import SettingsIcon from "./SettingsIcon.vue"
+  
+  import { RouterLink } from 'vue-router'
+  import { ref } from 'vue'
+
+  const showSettings = ref(false)
 </script>
 
 <style scoped>
@@ -34,6 +40,8 @@ header{
   display: flex;
   width: 100%;
   height: 50px;
+  background-color: white;
+  color: #2c3e50;
 }
 
 .space {
@@ -57,5 +65,17 @@ nav a {
 
 nav a.router-link-exact-active {
   color: #42b983;
+}
+
+.image {
+  width: 4rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.z-01 {
+  z-index: 2;
+  position: fixed;
+  right: 1vh;
 }
 </style>
