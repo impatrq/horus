@@ -1,5 +1,5 @@
 <template>
-    <button @click="$emit ('OnClick')" class="space">
+    <button @click="$emit ('OnClick')">
         <img :src="require('../assets/settings-icon.png')" alt="settings">
     </button> 
 </template>
@@ -16,5 +16,14 @@
     }
     img, button {
         width: 100%;
+    }
+    button {
+        border: none;
+        align-self: right;
+        width: 4%;
+        background-color: white
+    }
+    button:hover {
+        background-color: #eeeeee
     }
 </style>

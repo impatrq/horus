@@ -1,9 +1,9 @@
 <template>
     <div class="orderbox">
-        <h3>Order by</h3>
+        <h3>Order By</h3>
         <div class="orderfilter">
             <select v-model="ordertype" @change="emitOrder">
-                <option value="date-time" selected>Date and Time</option>
+                <option value="date-time" selected>Date</option>
                 <option value="time">Time</option>
                 <option value="image_id">Image ID</option>
                 <option value="plague_type">Plague Type</option>

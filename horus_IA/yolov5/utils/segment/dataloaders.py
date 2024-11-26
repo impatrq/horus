@@ -1,4 +1,4 @@
-# YOLOv5 🚀 by Ultralytics, AGPL-3.0 license
+# Ultralytics YOLOv5 🚀, AGPL-3.0 license
 """Dataloaders."""
 
 import os
@@ -7,7 +7,7 @@ import random
 import cv2
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, distributed
+from torch.utils.data import DataLoader
 
 from ..augmentations import augment_hsv, copy_paste, letterbox
 from ..dataloaders import InfiniteDataLoader, LoadImagesAndLabels, SmartDistributedSampler, seed_worker
@@ -39,6 +39,7 @@ def create_dataloader(
     overlap_mask=False,
     seed=0,
 ):
+    """Creates a dataloader for training, validating, or testing YOLO models with various dataset options."""
     if rect and shuffle:
         LOGGER.warning("WARNING ⚠️ --rect is incompatible with DataLoader shuffle, setting shuffle=False")
         shuffle = False
@@ -74,6 +75,7 @@ def create_dataloader(
         shuffle=shuffle and sampler is None,
         num_workers=nw,
         sampler=sampler,
+        drop_last=quad,
         pin_memory=True,
         collate_fn=LoadImagesAndLabelsAndMasks.collate_fn4 if quad else LoadImagesAndLabelsAndMasks.collate_fn,
         worker_init_fn=seed_worker,
@@ -82,6 +84,8 @@ def create_dataloader(
 
 
 class LoadImagesAndLabelsAndMasks(LoadImagesAndLabels):  # for training/testing
+    """Loads images, labels, and segmentation masks for training and testing YOLO models with augmentation support."""
+
     def __init__(
         self,
         path,
@@ -102,6 +106,7 @@ class LoadImagesAndLabelsAndMasks(LoadImagesAndLabels):  # for training/testing
         rank=-1,
         seed=0,
     ):
+        """Initializes the dataset with image, label, and mask loading capabilities for training/testing."""
         super().__init__(
             path,
             img_size,

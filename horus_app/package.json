@@ -6,17 +6,21 @@
     "scripts": {
         "serve": "cd frontend && vue-cli-service serve",
         "backend": "cd backend && npm run start:backend",
-        "electron:start": "concurrently \"npm run backend\" \"npm run serve\" \"wait-on http://localhost:8080 && electron .\" ",
-        "build": "vue-cli-service build frontend",
-        "start:backend": "nodemon backend/index.js --ignore '/frontend/'",
-        "start:frontend": "npm run serve --prefix '/frontend/'",
-        "dev": "concurrently \"npm run start:backend\" \"npm run electron:start\""
+        "electron:start": "concurrently --kill-others --success first \"npm run backend\" \"npm run serve\" \"wait-on http://localhost:8080 && electron .\" ",
+        "dev": "concurrently \"npm run start:backend\" \"npm run electron:start\"",
+        "electron:build": "electron-builder build --publish never -wl",
+        "build-electron": "cd frontend && vue-cli-service build",
+        "electron:build:all": "npm run build-electron && electron-builder build --publish never -wl",
+
+        "start": "electron .",
+        "start-backend": "node backend/index.js",
+        "start-frontend": "npm run serve --prefix frontend",
+        "build": "electron-builder"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@serialport/parser-readline": "^12.0.0",
         "body-parser": "^1.20.2",
         "core-js": "^3.8.3",
         "cors": "^2.8.5",
@@ -40,5 +44,29 @@
         "electron-builder": "^23.3.3",
         "nodemon": "^3.1.0",
         "wait-on": "^6.0.1"
+    },
+    "homepage": "./",
+    "build": {
+        "appId": "com.app.id",
+        "productName": "Horus App",
+        "files": [
+            "frontend/**/*",
+            "electron/**/*",
+            "backend/**/*"
+        ],
+        "extraResources": [
+            {
+                "from": "backend",
+                "to": "backend",
+                "filter": ["**/*"]
+            }
+        ],
+        "extends": null,
+        "linux": {
+            "target": "AppImage"
+        },
+        "win": {
+            "target": "nsis" 
+        }
     }
 }

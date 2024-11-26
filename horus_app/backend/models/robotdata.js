@@ -31,7 +31,7 @@ const dataSchema = new Schema({
     required: true,
   },
   coordinates: {
-    type: Array,
+    type: [Number],
     required: true,
   }
 }, { timestamps: true });

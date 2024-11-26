@@ -1,6 +1,6 @@
 <template>
     <div class="sorting-box">
-        <h3>Filter by</h3>
+        <h3>Filter By:</h3>
         {{filterInput.value}}
         <select v-model="filterSelect" @change="showCateg">
             <option value="date">Date</option>
@@ -10,7 +10,7 @@
             <option value="plagueType">Plague Type</option>
             <option value="pheromoneTrap">Pheromone Trap</option>
             <option value="probability">Probability</option>
-            <option value="location">Location</option>
+            <option value="location">Coordinates</option>
         </select>
         <!-- <FilterInput :inputType="date" :showIf="false" /> -->
         <div class="datepicker-box" v-if="showIfs.date">
@@ -35,8 +35,8 @@
         </div>
         <div class="pheromonetrap-radio" v-if="showIfs.pheromoneTrap">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('pheromoneTrap')"></input>
-            <input type="radio" name="pheromone-trap" v-model="filterInput.pheromone_trap" @change="updateFilter('pheromone_trap', filterInput.value.pheromone_trap)">Yes</input>
-            <input type="radio" name="pheromone-trap" v-model="filterInput.pheromone_trap" @change="updateFilter('pheromone_trap', filterInput.value.pheromone_trap)">No</input>
+            <input type="radio" name="pheromone-trap" @click="updateFilter('pheromone_trap', true)">Yes</input>
+            <input type="radio" name="pheromone-trap" @click="updateFilter('pheromone_trap', false)">No</input>
         </div>
         <div class="Probability-input" v-if="showIfs.probability">
             <input class="deleteCateg "type="image" :src="require('../assets/delete.png')" @click="hideCateg('probability')"></input>
@@ -70,13 +70,6 @@ const filterInput = ref({
     coordinates: ''
 });
 
-// const timeInput = ref();
-// const imageIdInput = ref();
-// const robotIdInput = ref();
-// const plagueTypeInput = ref();
-// const pheromoneTrapInput = ref();
-// const probabilityInput = ref();
-// const locationInput = ref();
 
 const showIfs = ref({
     date: false,
@@ -100,7 +93,7 @@ function hideCateg(categ){
 }
 
 function updateFilter(key, value) {
-  emit('updateFilter', { key, value });
+    emit('updateFilter', { key, value });
 }
 
 </script>
@@ -123,6 +116,7 @@ function updateFilter(key, value) {
 
     .deleteCateg{
         height: 1.5rem;
-        margin-right: 1rem
+        margin-right: 1rem;
+        flex-wrap: wrap
     }
 </style>
