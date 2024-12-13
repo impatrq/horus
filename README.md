@@ -28,6 +28,11 @@ El robot se translada de manera autónoma por el campo y analiza los cultivos a 
 
 Somos un grupo de alumnos de E.E.S.T. N°7 "Taller Regional Quilmes" (IMPA).
 
+<div align="center">
+<img src="/horus_documentacion/equipoHORUS.jpg.jpeg" height="525" width="700" />
+</div>
+
+
 ### Cabrera, Martín
 
 * 📧 martincabreracirco@gmail.com
